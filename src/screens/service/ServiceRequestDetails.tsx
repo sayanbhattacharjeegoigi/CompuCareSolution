@@ -16,7 +16,18 @@ interface Props {
   navigation: any;
 }
 const ServiceRequestDetails: React.FC<Props> = ({ navigation, route }: any) => {
-  const serviceData = route?.params;
+  const serviceData = route?.params?.item as RequestDetailType;
+  console.log("Service Request Details:", route?.params);
+
+  if (!serviceData) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ fontSize: responsive.fontSize(18), color: "#000" }}>
+          No service request details available.
+        </Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CurvedShape
@@ -30,27 +41,27 @@ const ServiceRequestDetails: React.FC<Props> = ({ navigation, route }: any) => {
           {/* Simple Fields */}
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>Service Request Id:</Text>
-            <Text style={styles.value}>{serviceData.serviceRequestId}</Text>
+            <Text style={styles.value}>{serviceData?.serviceRequestId}</Text>
           </View>
 
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>Repair Category:</Text>
-            <Text style={styles.value}>{serviceData.repairCategory}</Text>
+            <Text style={styles.value}>{serviceData?.repairCategory}</Text>
           </View>
 
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>Service Request Type:</Text>
-            <Text style={styles.value}>{serviceData.serviceRequestType}</Text>
+            <Text style={styles.value}>{serviceData?.serviceRequestType}</Text>
           </View>
 
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>Brand:</Text>
-            <Text style={styles.value}>{serviceData.brand}</Text>
+            <Text style={styles.value}>{serviceData?.brand}</Text>
           </View>
 
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>Model:</Text>
-            <Text style={styles.value}>{serviceData.model}</Text>
+            <Text style={styles.value}>{serviceData?.model}</Text>
           </View>
 
           {/* Repair Issues */}
@@ -61,7 +72,7 @@ const ServiceRequestDetails: React.FC<Props> = ({ navigation, route }: any) => {
             ]}
           >
             <Text style={styles.label}>Repair Issue:</Text>
-            {serviceData.repairIssues.map(
+            {serviceData?.repairIssues.map(
               (issue: string, idx: number): React.ReactElement => (
                 <Text key={idx} style={styles.bulletText}>
                   ● {issue}

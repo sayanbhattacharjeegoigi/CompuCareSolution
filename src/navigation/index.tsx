@@ -69,9 +69,7 @@ const CustomHeader = ({ navigation, route, options }: BottomTabHeaderProps) => {
           {route?.name !== "Home" && (
             <Pressable
               onPress={() => {
-                navigation.navigate(Routes.Stack, {
-                  screen: Routes.RepairFlow,
-                });
+                navigation.navigate(Routes.RepairFlow);
               }}
             >
               <AntDesign name="pluscircle" size={24} color="#20B2AA" />

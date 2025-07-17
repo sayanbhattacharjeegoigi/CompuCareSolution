@@ -29,9 +29,8 @@ const Notification = ({ navigation }: any) => {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate(Routes.Stack, {
-                  screen: Routes.NotificationDetails,
-                  params: { notification: item },
+                navigation.navigate(Routes.NotificationDetails, {
+                  notification: item,
                 });
               }}
               style={styles.notificationCard}

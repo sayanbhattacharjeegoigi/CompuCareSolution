@@ -8,7 +8,10 @@ const RootStack = createNativeStackNavigator();
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+      <RootStack.Navigator
+        initialRouteName={Routes.LogIn}
+        screenOptions={{ headerShown: false }}
+      >
         {/* Auth Screens */}
         <RootStack.Screen name={Routes.LogIn} component={screens.Login} />
         <RootStack.Screen

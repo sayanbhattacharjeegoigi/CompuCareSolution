@@ -46,10 +46,7 @@ const Service = ({ navigation }: ServiceScreenProps) => {
         >
           <Pressable
             onPress={() => {
-              navigation.navigate(Routes.Stack, {
-                screen: Routes.ServiceRequestDetails,
-                params: item,
-              });
+              navigation.navigate(Routes.ServiceRequestDetails, { item });
             }}
             style={{
               width: responsive.number(44),

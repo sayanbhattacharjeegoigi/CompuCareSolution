@@ -14,7 +14,8 @@
     },
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "compucaresolutionscustomer"
     },
     "android": {
       "adaptiveIcon": {

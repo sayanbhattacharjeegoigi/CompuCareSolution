@@ -131,9 +131,7 @@ const Login = ({ navigation }: { navigation: any }) => {
               <Pressable
                 hitSlop={hitSlope}
                 onPress={() => {
-                  navigation.navigate(Routes.Stack, {
-                    screen: Routes.Registration,
-                  });
+                  navigation.navigate(Routes.Registration);
                 }}
                 style={{
                   marginTop: responsive.number(20),

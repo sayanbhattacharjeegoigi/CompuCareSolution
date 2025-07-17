@@ -43,9 +43,7 @@ const Home = ({ navigation }: any) => {
             <TouchableOpacity
               style={styles.button}
               onPress={() => {
-                navigation.navigate(Routes.Stack, {
-                  screen: Routes.RepairFlow,
-                });
+                navigation.navigate(Routes.RepairFlow);
               }}
             >
               <Text style={styles.buttonText}>Add New Request</Text>
