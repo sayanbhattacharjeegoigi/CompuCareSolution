@@ -19,7 +19,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-const Registration = ({ navigation }) => {
+const Registration = ({ navigation }: { navigation: any }) => {
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");

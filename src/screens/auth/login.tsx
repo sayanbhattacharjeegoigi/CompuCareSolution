@@ -19,7 +19,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-const Login = ({ navigation }) => {
+const Login = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);

@@ -20,11 +20,11 @@ const AppNavigator = () => {
         <RootStack.Screen name={Routes.Tab} component={Tabs} />
         <RootStack.Screen
           name={Routes.ServiceRequestDetails}
-          component={screens.ServiceRequestDetails}
+          component={screens.ServiceRequestDetails as React.ComponentType<any>}
         />
         <RootStack.Screen
           name={Routes.NotificationDetails}
-          component={screens.NotificationDetails}
+          component={screens.NotificationDetails as React.ComponentType<any>}
         />
         <RootStack.Screen
           name={Routes.RepairFlow}
@@ -42,3 +42,4 @@ const AppNavigator = () => {
     </NavigationContainer>
   );
 };
+export default AppNavigator;

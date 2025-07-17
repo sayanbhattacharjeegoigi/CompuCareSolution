@@ -38,6 +38,7 @@ const RepairFlowScreen = ({ navigation }: any) => {
     <SummaryStep
       key="summary"
       data={formData}
+      onNext={() => {}}
       onBack={handlePrev}
       onSubmit={handleSubmit}
     />,

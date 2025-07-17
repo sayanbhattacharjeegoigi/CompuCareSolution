@@ -5,7 +5,6 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
-
     "scheme": "compucaresolutionscustomer",
     "userInterfaceStyle": "light",
     "splash": {
@@ -25,13 +24,8 @@
       "edgeToEdgeEnabled": true,
       "package": "com.slash7991.CompuCareSolutions_Customer"
     },
-
     "plugins": [],
-    "experiments": {
-      "typedRoutes": true
-    },
     "extra": {
-      "router": {},
       "eas": {
         "projectId": "fdb77430-79a5-4723-aa5e-4ec9f0ef0c02"
       }

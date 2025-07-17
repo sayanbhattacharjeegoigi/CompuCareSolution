@@ -3,7 +3,7 @@ import CurvedShape from "@/src/component/ui/CurvedBackground ";
 import { RequestDetailType } from "@/src/constants/Data";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import React from "react";
+import React, { JSX } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -61,11 +61,13 @@ const ServiceRequestDetails: React.FC<Props> = ({ navigation, route }: any) => {
             ]}
           >
             <Text style={styles.label}>Repair Issue:</Text>
-            {serviceData.repairIssues.map((issue, idx) => (
-              <Text key={idx} style={styles.bulletText}>
-                ● {issue}
-              </Text>
-            ))}
+            {serviceData.repairIssues.map(
+              (issue: string, idx: number): React.ReactElement => (
+                <Text key={idx} style={styles.bulletText}>
+                  ● {issue}
+                </Text>
+              )
+            )}
           </View>
 
           {/* Additional Info */}
@@ -88,18 +90,25 @@ const ServiceRequestDetails: React.FC<Props> = ({ navigation, route }: any) => {
           </Text>
           <View style={styles.imageRow}>
             {serviceData.uploadedImages?.length > 0
-              ? serviceData.uploadedImages.map((img, idx) => (
-                  <Image
-                    key={idx}
-                    source={{ uri: img }}
-                    style={styles.imagePlaceholder}
-                  />
-                ))
-              : [1, 2, 3, 4].map((item) => (
-                  <TouchableOpacity key={item} style={styles.imagePlaceholder}>
-                    <Ionicons name="add" size={32} color="#000" />
-                  </TouchableOpacity>
-                ))}
+              ? serviceData.uploadedImages.map(
+                  (img: string, idx: number): JSX.Element => (
+                    <Image
+                      key={idx}
+                      source={{ uri: img }}
+                      style={styles.imagePlaceholder}
+                    />
+                  )
+                )
+              : [1, 2, 3, 4].map(
+                  (item: number): JSX.Element => (
+                    <TouchableOpacity
+                      key={item}
+                      style={styles.imagePlaceholder}
+                    >
+                      <Ionicons name="add" size={32} color="#000" />
+                    </TouchableOpacity>
+                  )
+                )}
           </View>
         </ScrollView>
       </CurvedShape>

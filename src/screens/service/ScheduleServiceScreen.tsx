@@ -21,8 +21,15 @@ const ScheduleServiceScreen = ({ navigation }: any) => {
     setDescriptions([...descriptions, ""]);
   };
 
-  const updateDescription = (text, index) => {
-    const newDescriptions = [...descriptions];
+  interface UpdateDescriptionFunction {
+    (text: string, index: number): void;
+  }
+
+  const updateDescription: UpdateDescriptionFunction = (
+    text: string,
+    index: number
+  ): void => {
+    const newDescriptions: string[] = [...descriptions];
     newDescriptions[index] = text;
     setDescriptions(newDescriptions);
   };
