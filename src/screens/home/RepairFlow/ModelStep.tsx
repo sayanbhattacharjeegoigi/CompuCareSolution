@@ -1,6 +1,9 @@
 import { responsive } from "@/hooks/resposive";
+import { api_get__modal_by_manufacturer } from "@/src/apis/ApiEndPoint";
+import { CallApi_GET } from "@/src/apis/ApiRequest";
 import CurvedShape from "@/src/component/ui/CurvedBackground ";
-import React from "react";
+import { modelListType } from "@/src/constants/Data";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -11,10 +14,37 @@ import {
 
 const models = ["Aspire", "Swift", "Predator", "TravelMate"];
 type CategoryStepProps = {
-  onNext: (selectedCategory: string) => void;
+  manufacturerId: number;
+  onNext: (data: modelListType) => void;
   onBack: () => void;
 };
-const ModelStep = ({ onNext, onBack }: CategoryStepProps) => {
+const ModelStep = ({ manufacturerId, onNext, onBack }: CategoryStepProps) => {
+  const [modelList, setModelList] = useState<modelListType[]>([]);
+
+  const getManufacturers = async () => {
+    try {
+      if (!manufacturerId) {
+        return;
+      }
+      const res = await CallApi_GET(
+        api_get__modal_by_manufacturer + manufacturerId
+      );
+      if (res?.status === 1) {
+        setModelList(res?.list || []);
+      } else {
+        console.error(
+          "Failed to fetch categories:",
+          res?.error || "Unknown error"
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+  useEffect(() => {
+    getManufacturers();
+  }, []);
+
   return (
     <View style={styles.container}>
       <CurvedShape
@@ -30,13 +60,13 @@ const ModelStep = ({ onNext, onBack }: CategoryStepProps) => {
           <Text style={styles.title}>Please Choose Device</Text>
           <Text style={styles.highlight}>Model</Text>
           <View style={styles.grid}>
-            {models.map((model, index) => (
+            {modelList.map((model, index) => (
               <TouchableOpacity
                 key={index}
                 style={styles.card}
                 onPress={() => onNext(model)}
               >
-                <Text style={styles.label}>{model}</Text>
+                <Text style={styles.label}>{model.name}</Text>
               </TouchableOpacity>
             ))}
           </View>

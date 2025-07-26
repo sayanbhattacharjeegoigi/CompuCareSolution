@@ -1,6 +1,9 @@
 import { responsive } from "@/hooks/resposive";
+import { api_get_service_type_by_repair_category } from "@/src/apis/ApiEndPoint";
+import { CallApi_GET } from "@/src/apis/ApiRequest";
 import CurvedShape from "@/src/component/ui/CurvedBackground ";
-import React from "react";
+import { serviceType } from "@/src/constants/Data";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -10,19 +13,45 @@ import {
   View,
 } from "react-native";
 
-const services = [
-  {
-    label: "Custom New PC Builds",
-    image: require("@/assets/images/service_custom_pc.png"), // Replace with actual icon path
-  },
-];
-
 interface Props {
-  onNext: (selectedService: string) => void;
+  repairCategoryId: number;
+  onNext: (data: serviceType) => void;
   onBack: () => void;
 }
 
-const ServiceTypeStep: React.FC<Props> = ({ onNext, onBack }) => {
+const ServiceTypeStep: React.FC<Props> = ({
+  repairCategoryId,
+  onNext,
+  onBack,
+}) => {
+  const [serviceType, setServiceType] = useState<serviceType[]>([]);
+
+  const getServiceType = async () => {
+    console.log("Fetching service types for category ID:", repairCategoryId);
+
+    try {
+      if (!repairCategoryId) {
+        return;
+      }
+      const res = await CallApi_GET(
+        api_get_service_type_by_repair_category + repairCategoryId
+      );
+      if (res?.status === 1) {
+        setServiceType(res?.list || []);
+      } else {
+        console.error(
+          "Failed to fetch categories:",
+          res?.error || "Unknown error"
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+  useEffect(() => {
+    getServiceType();
+  }, [repairCategoryId]);
+
   return (
     <View style={styles.container}>
       <CurvedShape
@@ -38,18 +67,18 @@ const ServiceTypeStep: React.FC<Props> = ({ onNext, onBack }) => {
           <Text style={styles.title}>Please Choose</Text>
           <Text style={styles.highlight}>Service Type</Text>
           <View style={styles.grid}>
-            {services.map((item, index) => (
+            {serviceType.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 style={styles.card}
-                onPress={() => onNext(item.label)}
+                onPress={() => onNext(item)}
               >
                 <Image
-                  source={item.image}
+                  source={{ uri: item?.image }}
                   style={styles.icon}
                   resizeMode="contain"
                 />
-                <Text style={styles.label}>{item.label}</Text>
+                <Text style={styles.label}>{item.description}</Text>
               </TouchableOpacity>
             ))}
           </View>

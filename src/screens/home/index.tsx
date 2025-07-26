@@ -1,6 +1,8 @@
 import { responsive } from "@/hooks/resposive";
+import LoaderIndicator from "@/src/component/common/LoaderIndicator";
+import { fetchUserDetails } from "@/src/redux/slice/authSlice";
 import { Routes } from "@/src/utils/Routes";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -8,10 +10,23 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
 const Home = ({ navigation }: any) => {
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state: any) => state.auth);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      // Any logic you want to run when the screen is focused
+      dispatch(fetchUserDetails());
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <View style={[styles.container, { backgroundColor: "#1E3A8A" }]}>
+      <LoaderIndicator isLoading={loading} />
       <View
         style={[
           styles.container,
@@ -79,7 +94,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     width: "100%",
-
+    paddingHorizontal: responsive.number(20),
     marginTop: responsive.number(20),
   },
   header: {

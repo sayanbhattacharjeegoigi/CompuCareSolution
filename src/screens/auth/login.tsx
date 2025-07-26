@@ -1,9 +1,13 @@
 import { responsive } from "@/hooks/resposive";
+import LoaderIndicator from "@/src/component/common/LoaderIndicator";
 import Inputfield from "@/src/component/ui/Inputfield";
 import { Colors } from "@/src/constants/Colors";
 import { hitSlope } from "@/src/constants/HitSlope";
+import { login } from "@/src/redux/slice/authSlice";
+import type { RootState } from "@/src/redux/store/Store";
 import { Routes } from "@/src/utils/Routes";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import type { ThunkDispatch } from "@reduxjs/toolkit";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
@@ -19,12 +23,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+
 const Login = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
+
+  const dispatch = useDispatch<ThunkDispatch<RootState, any, any>>(); // <-- type the dispatch hook for thunks
+  const { loading, error } = useSelector((state: any) => state.auth);
+
   return (
     <SafeAreaView style={styles.container}>
+      <LoaderIndicator isLoading={loading} />
       <ScrollView
         bounces={false}
         keyboardShouldPersistTaps="handled"
@@ -62,7 +73,7 @@ const Login = ({ navigation }: { navigation: any }) => {
           <KeyboardAvoidingView
             style={{ flex: 1, width: "100%" }}
             contentContainerStyle={{ width: "100%" }}
-            behavior={Platform.OS === "ios" ? "position" : "height"}
+            behavior={Platform.OS === "ios" ? "position" : "position"}
             keyboardVerticalOffset={
               Platform.OS === "ios" ? 0 : StatusBar.currentHeight || 0
             }
@@ -121,7 +132,8 @@ const Login = ({ navigation }: { navigation: any }) => {
 
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate(Routes.Tab, { screen: Routes.Home });
+                  // navigation.navigate(Routes.Tab, { screen: Routes.Home });
+                  dispatch(login(email, password));
                 }}
                 style={styles.signinButton}
               >

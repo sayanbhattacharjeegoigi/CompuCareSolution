@@ -1,4 +1,5 @@
 import { responsive } from "@/hooks/resposive";
+import { logout } from "@/src/redux/slice/authSlice";
 import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
@@ -9,40 +10,48 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
-const profileOptions = [
-  {
-    label: "Contact Information",
-    icon: <Ionicons name="send" size={20} color="#fff" />,
-    route: "ContactInfo",
-  },
-  {
-    label: "Saved Addresses",
-    icon: <Ionicons name="location-sharp" size={20} color="#fff" />,
-    route: "SavedAddresses",
-  },
-  {
-    label: "Payment Methods",
-    icon: <FontAwesome5 name="wallet" size={20} color="#fff" />,
-    route: "PaymentMethods",
-  },
-  {
-    label: "Notification",
-    icon: <Ionicons name="notifications" size={20} color="#fff" />,
-    route: "Notification",
-  },
-  {
-    label: "Help & Support",
-    icon: <MaterialIcons name="support-agent" size={20} color="#fff" />,
-    route: "HelpSupport",
-  },
-  {
-    label: "Logout",
-    icon: <MaterialIcons name="logout" size={20} color="#fff" />,
-    route: "Logout",
-  },
-];
 const Profile = () => {
+  const { userDetails } = useSelector((state: any) => state.auth);
+  const profileOptions = [
+    {
+      label: "Contact Information",
+      icon: <Ionicons name="send" size={20} color="#fff" />,
+      route: "ContactInfo",
+    },
+    {
+      label: "Saved Addresses",
+      icon: <Ionicons name="location-sharp" size={20} color="#fff" />,
+      route: "SavedAddresses",
+    },
+    {
+      label: "Payment Methods",
+      icon: <FontAwesome5 name="wallet" size={20} color="#fff" />,
+      route: "PaymentMethods",
+    },
+    {
+      label: "Notification",
+      icon: <Ionicons name="notifications" size={20} color="#fff" />,
+      route: "Notification",
+    },
+    {
+      label: "Help & Support",
+      icon: <MaterialIcons name="support-agent" size={20} color="#fff" />,
+      route: "HelpSupport",
+    },
+    {
+      label: "Logout",
+      icon: <MaterialIcons name="logout" size={20} color="#fff" />,
+      route: "Logout",
+      action: () => handleLogout(),
+    },
+  ];
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
   return (
     <View style={[styles.container, { backgroundColor: "#1E3A8A" }]}>
       <View
@@ -68,17 +77,28 @@ const Profile = () => {
             contentContainerStyle={styles.scrollContainer}
           >
             <View style={styles.avatarContainer}>
-              <Image
-                source={require("@/assets/images/user.png")} // or use any static dummy image
-                style={styles.avatar}
-              />
+              {userDetails?.profileImg ? (
+                <Image
+                  source={{ uri: userDetails?.profileImg }} // or use any static dummy image
+                  style={styles.avatar}
+                />
+              ) : (
+                <Image
+                  source={require("@/assets/images/user.png")} // or use any static dummy image
+                  style={styles.avatar}
+                />
+              )}
             </View>
 
             {profileOptions.map((item, idx) => (
               <TouchableOpacity
                 key={idx}
                 style={styles.optionRow}
-                onPress={() => {}}
+                onPress={() => {
+                  if (item?.action) {
+                    item.action();
+                  }
+                }}
               >
                 <View style={styles.iconWrapper}>{item.icon}</View>
                 <Text style={styles.optionLabel}>{item.label}</Text>

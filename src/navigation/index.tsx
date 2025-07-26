@@ -10,11 +10,13 @@ import CustomTabBar from "./CustomTabBar";
 import { responsive } from "@/hooks/resposive";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import type { BottomTabHeaderProps } from "@react-navigation/bottom-tabs";
+import { useSelector } from "react-redux";
 import { images } from "../constants/Icons";
 import { Routes } from "../utils/Routes";
 const Tab = createBottomTabNavigator();
 
 const CustomHeader = ({ navigation, route, options }: BottomTabHeaderProps) => {
+  const { userDetails } = useSelector((state: any) => state.auth);
   return (
     <View
       style={{
@@ -40,23 +42,39 @@ const CustomHeader = ({ navigation, route, options }: BottomTabHeaderProps) => {
             marginTop: responsive.number(20),
           }}
         >
-          <Image
-            source={images.demoProfile}
-            style={{
-              width: responsive.number(40),
-              height: undefined,
-              aspectRatio: 1,
-              resizeMode: "contain",
-              borderWidth: 2,
-              borderRadius: responsive.number(40) / 2,
-              borderColor: "#20B2AA",
-            }}
-          />
+          {userDetails?.profileImg ? (
+            <Image
+              source={{ uri: userDetails?.profileImg }} // or use any static dummy image
+              style={{
+                width: responsive.number(40),
+                height: undefined,
+                aspectRatio: 1,
+                resizeMode: "contain",
+                borderWidth: 2,
+                borderRadius: responsive.number(40) / 2,
+                borderColor: "#20B2AA",
+              }}
+            />
+          ) : (
+            <Image
+              source={images.demoProfile}
+              style={{
+                width: responsive.number(40),
+                height: undefined,
+                aspectRatio: 1,
+                resizeMode: "contain",
+                borderWidth: 2,
+                borderRadius: responsive.number(40) / 2,
+                borderColor: "#20B2AA",
+              }}
+            />
+          )}
+
           <View style={{ marginLeft: responsive.number(21) }}>
             <Text
               style={[styles.textStyle, { fontSize: responsive.fontSize(24) }]}
             >
-              Hello Jonny,
+              Hello {userDetails?.fname || "User"},
             </Text>
             <Text
               style={[styles.textStyle, { fontSize: responsive.fontSize(18) }]}

@@ -1,23 +1,24 @@
 import axios, { AxiosInstance } from "axios";
-import { ApiKey } from "../constants/GlobalKey";
 
+// httpClient.ts
 const http: AxiosInstance = axios.create({
-  baseURL: "", // you can optionally set a global base URL
+  baseURL: "https://techb.igiapp.com/compucaresolutions/api", // ✅ set base URL once
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
-    "x-api-key": ApiKey,
   },
-  timeout: 10000, // optional timeout
+  timeout: 10000,
 });
 
 // Add interceptors if needed (e.g. logging, auth)
 http.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("API error:", error);
-    return Promise.reject(error);
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Something went wrong with API";
+    return Promise.reject({ message });
   }
 );
-
 export default http;

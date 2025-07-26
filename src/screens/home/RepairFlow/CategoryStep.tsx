@@ -1,8 +1,11 @@
 import { responsive } from "@/hooks/resposive";
+import { api_get_repair_category } from "@/src/apis/ApiEndPoint";
+import { CallApi_GET } from "@/src/apis/ApiRequest";
 import CurvedShape from "@/src/component/ui/CurvedBackground ";
+import { RepairCategory } from "@/src/constants/Data";
 import { useNavigation } from "@react-navigation/native";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -12,19 +15,31 @@ import {
   View,
 } from "react-native";
 
-const categories = [
-  { label: "Computer", image: require("@/assets/images/computer.png") },
-  { label: "Laptop", image: require("@/assets/images/laptop.png") },
-  {
-    label: "Laptop Screen",
-    image: require("@/assets/images/laptop_screen.png"),
-  },
-];
 type CategoryStepProps = {
-  onNext: (selectedCategory: string) => void;
+  onNext: (data: RepairCategory) => void;
 };
 const CategoryStep = ({ onNext }: CategoryStepProps) => {
+  const [category, setCategory] = useState<RepairCategory[]>([]);
   const navigation = useNavigation();
+  const getCategory = async () => {
+    try {
+      const res = await CallApi_GET(api_get_repair_category);
+      if (res?.status === 1) {
+        setCategory(res?.list || []);
+      } else {
+        console.error(
+          "Failed to fetch categories:",
+          res?.error || "Unknown error"
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+  useEffect(() => {
+    getCategory();
+  }, []);
+
   return (
     <View style={styles.container}>
       <CurvedShape
@@ -40,18 +55,18 @@ const CategoryStep = ({ onNext }: CategoryStepProps) => {
           <Text style={styles.title}>Please Choose Device</Text>
           <Text style={styles.highlight}>Category</Text>
           <View style={styles.grid}>
-            {categories.map((item, index) => (
+            {category?.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 style={styles.card}
-                onPress={() => onNext(item.label)}
+                onPress={() => onNext(item)}
               >
                 <Image
-                  source={item.image}
+                  source={{ uri: item?.image }}
                   style={styles.icon}
                   resizeMode="contain"
                 />
-                <Text style={styles.label}>{item.label}</Text>
+                <Text style={styles.label}>{item?.description}</Text>
               </TouchableOpacity>
             ))}
           </View>

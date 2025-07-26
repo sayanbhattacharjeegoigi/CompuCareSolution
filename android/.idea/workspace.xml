@@ -6,59 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="5d644fc9-d5f3-4185-bfd3-ac3ad5184634" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/debug.keystore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/proguard-rules.pro" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/debug/AndroidManifest.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/slash7991/CompuCareSolutions_Customer/MainActivity.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/slash7991/CompuCareSolutions_Customer/MainApplication.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-hdpi/splashscreen_logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-mdpi/splashscreen_logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-xhdpi/splashscreen_logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/rn_edit_text_material.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-night/colors.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../eas.json" beforeDir="false" afterPath="$PROJECT_DIR$/../eas.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/apis/ApiEndPoint.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/apis/ApiEndPoint.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/apis/httpClient.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../src/apis/httpClient.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/constants/Data.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/constants/Data.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../src/navigation/AppNavigation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/navigation/AppNavigation.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../src/navigation/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/navigation/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/redux/feature/addAdressSlice.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/redux/store/Store.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/redux/store/Store.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../src/screens/auth/login.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/screens/auth/login.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../src/screens/auth/registration.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/screens/auth/registration.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../src/screens/home/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/screens/home/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/screens/notification/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/screens/notification/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/screens/service/ServiceRequestDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/screens/service/ServiceRequestDetails.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/screens/service/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/screens/service/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/screens/profile/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../src/screens/profile/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -82,7 +41,6 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
-    "android.gradle.sync.needed": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "main",

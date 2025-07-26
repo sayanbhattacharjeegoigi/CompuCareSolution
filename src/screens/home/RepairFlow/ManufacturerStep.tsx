@@ -1,6 +1,9 @@
 import { responsive } from "@/hooks/resposive";
+import { api_get_manufacturer_by_repair_category } from "@/src/apis/ApiEndPoint";
+import { CallApi_GET } from "@/src/apis/ApiRequest";
 import CurvedShape from "@/src/component/ui/CurvedBackground ";
-import React from "react";
+import { manufacturerType } from "@/src/constants/Data";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -9,21 +12,44 @@ import {
   View,
 } from "react-native";
 
-const brands = [
-  "Accer",
-  "Samsung",
-  "Apple",
-  "Dell",
-  "Hp",
-  "Sony",
-  "MSI",
-  "Testing Battery",
-];
 type CategoryStepProps = {
-  onNext: (selectedCategory: string) => void;
+  repairCategoryId: number;
+  onNext: (data: manufacturerType) => void;
   onBack: () => void;
 };
-const ManufacturerStep = ({ onNext, onBack }: CategoryStepProps) => {
+const ManufacturerStep = ({
+  repairCategoryId,
+  onNext,
+  onBack,
+}: CategoryStepProps) => {
+  const [manufacturers, setManufacturers] = useState<manufacturerType[]>([]);
+
+  const getManufacturers = async () => {
+    console.log("Fetching service types for category ID:", repairCategoryId);
+
+    try {
+      if (!repairCategoryId) {
+        return;
+      }
+      const res = await CallApi_GET(
+        api_get_manufacturer_by_repair_category + repairCategoryId
+      );
+      if (res?.status === 1) {
+        setManufacturers(res?.list || []);
+      } else {
+        console.error(
+          "Failed to fetch categories:",
+          res?.error || "Unknown error"
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+  useEffect(() => {
+    getManufacturers();
+  }, [repairCategoryId]);
+
   return (
     <View style={styles.container}>
       <CurvedShape
@@ -39,13 +65,13 @@ const ManufacturerStep = ({ onNext, onBack }: CategoryStepProps) => {
           <Text style={styles.title}>Please Choose Device</Text>
           <Text style={styles.highlight}>Manufacturer</Text>
           <View style={styles.grid}>
-            {brands.map((brand, index) => (
+            {manufacturers.map((brand, index) => (
               <TouchableOpacity
                 key={index}
                 style={styles.card}
                 onPress={() => onNext(brand)}
               >
-                <Text style={styles.label}>{brand}</Text>
+                <Text style={styles.label}>{brand.name}</Text>
               </TouchableOpacity>
             ))}
           </View>

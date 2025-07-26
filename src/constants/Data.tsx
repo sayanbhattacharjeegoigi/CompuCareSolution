@@ -110,3 +110,69 @@ export const dummyNotifications: NotificationType[] = [
     ],
   },
 ];
+
+export interface LoginResponse {
+  status: number;
+  userId: number;
+  fullName: string;
+  email: string;
+  userType: number;
+  message: string;
+}
+
+export interface RegisterResponse {
+  status: string;
+  message: string;
+  userId: number;
+}
+export interface UserDetails {
+  userId: number;
+  customerId: string;
+  timezoneId: number;
+  timezone: string;
+  fname: string;
+  lname: string;
+  email: string;
+  profileImg: string;
+  gender: string | null;
+  date_of_birth: string | null;
+  address: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  phoneNumber: string;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  zip_code: string | null;
+  stripe_customer_id: string | null;
+  stripe_connect_id: string | null;
+  stripe_account_verified: number;
+  profile_description: string;
+}
+export interface RepairCategory {
+  id: number;
+  name: string;
+  image: any;
+  description: string;
+}
+export interface serviceType {
+  id: number;
+  name: string;
+  image: any;
+  description: string;
+}
+export interface manufacturerType {
+  id: number;
+  name: string;
+}
+export interface modelListType {
+  id: number;
+  name: string;
+}
+export interface RepairRequestPayload {
+  repair_category_id: string;
+  maufacturer_id: string;
+  model_id: string;
+  service_type_id: string;
+  repair_issue_id: number[]; // Array of issue IDs
+}
