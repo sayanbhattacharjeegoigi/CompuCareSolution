@@ -117,6 +117,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "flex-start",
+    gap: responsive.number(10),
+    width: "100%",
   },
   card: {
     width: "47%",

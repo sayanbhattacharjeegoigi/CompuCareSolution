@@ -1,11 +1,11 @@
 // store.ts
 import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
 import authReducer from "../slice/authSlice";
+import serviceRequestReducer from "../slice/serviceRequestSlice"; // ✅ import it
 
 let middleware = (getDefaultMiddleware: any) => getDefaultMiddleware();
 
 if (__DEV__) {
-  // only import and use redux-logger in development
   const { default: logger } = require("redux-logger");
   middleware = (getDefaultMiddleware: any) =>
     getDefaultMiddleware().concat(logger);
@@ -14,6 +14,7 @@ if (__DEV__) {
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    serviceRequest: serviceRequestReducer, // ✅ add the reducer here
   },
   middleware,
 });

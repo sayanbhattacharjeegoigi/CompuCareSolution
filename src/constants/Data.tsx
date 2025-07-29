@@ -169,6 +169,10 @@ export interface modelListType {
   id: number;
   name: string;
 }
+export interface problemListType {
+  id: number;
+  name: string;
+}
 export interface RepairRequestPayload {
   repair_category_id: string;
   maufacturer_id: string;

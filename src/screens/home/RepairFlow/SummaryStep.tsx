@@ -1,5 +1,6 @@
 import { responsive } from "@/hooks/resposive";
 import CurvedShape from "@/src/component/ui/CurvedBackground ";
+import { problemListType } from "@/src/constants/Data";
 import React from "react";
 import {
   ScrollView,
@@ -8,13 +9,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-type CategoryStepProps = {
-  data: any;
-  onNext: (selectedCategory: any) => void;
+type Props = {
+  finalData: any;
+
   onBack: () => void;
   onSubmit: () => void;
 };
-const SummaryStep = ({ data, onSubmit, onBack }: CategoryStepProps) => {
+const SummaryStep = ({ finalData, onSubmit, onBack }: Props) => {
+  console.log("SummaryStep data:", finalData);
+
   return (
     <View style={styles.container}>
       <CurvedShape
@@ -31,23 +34,32 @@ const SummaryStep = ({ data, onSubmit, onBack }: CategoryStepProps) => {
 
           <View style={styles.row}>
             <Text style={styles.label}>Category: </Text>
-            <Text style={styles.value}>{data.category}</Text>
+            <Text style={styles.value}>
+              {finalData?.repairCategory?.description}
+            </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Service Type: </Text>
-            <Text style={styles.value}>Custom New PC Builds</Text>
+            <Text style={styles.value}>{finalData?.serviceType?.name}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Manufacturer: </Text>
-            <Text style={styles.value}>{data.manufacturer}</Text>
+            <Text style={styles.value}>{finalData?.manufacturer?.name}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Model: </Text>
-            <Text style={styles.value}>{data.model}</Text>
+            <Text style={styles.value}>{finalData?.model?.name}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Problems: </Text>
-            {/* <Text style={styles.value}>{data.problems.join(", ")}</Text> */}
+            <View>
+              {finalData?.problems?.map((problem: problemListType) => (
+                <View key={problem.id} style={styles.bulletItem}>
+                  <Text style={styles.bulletPoint}>{"\u2022"}</Text>
+                  <Text style={styles.value}>{problem.name}</Text>
+                </View>
+              ))}
+            </View>
           </View>
 
           <TouchableOpacity style={styles.button} onPress={onSubmit}>
@@ -103,5 +115,21 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: responsive.fontSize(16),
     fontWeight: "600",
+  },
+  bulletItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: responsive.number(6),
+    marginLeft: responsive.number(5),
+  },
+  bulletPoint: {
+    fontSize: responsive?.fontSize(16),
+    marginRight: responsive.number(8),
+    lineHeight: responsive.number(20),
+  },
+  problemText: {
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 20,
   },
 });
