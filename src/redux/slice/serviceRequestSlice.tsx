@@ -69,7 +69,7 @@ const serviceRequestSlice = createSlice({
     addressDescription(state, action) {
       state.description = action.payload;
     },
-    addressClear(state) {
+    addressDescriptionClear(state) {
       state.description = [];
     },
   },
@@ -81,6 +81,9 @@ export const {
   requestFailure,
   clearRequest,
   addressStore,
+  addressDescription,
+  addressDescriptionClear,
+  addressclear,
 } = serviceRequestSlice.actions;
 
 export default serviceRequestSlice.reducer;

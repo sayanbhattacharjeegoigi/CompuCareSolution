@@ -76,18 +76,7 @@ export default function RepairFlowScreen() {
         />
       )}
 
-      {step === 1 && (
-        <ServiceTypeStep
-          repairCategoryId={repairCategory?.id ?? 0}
-          onBack={goBack}
-          onNext={(data: serviceType) => {
-            setServiceType(data);
-            goNext();
-          }}
-        />
-      )}
-
-      {repairCategory && step === 2 && (
+      {repairCategory && step === 1 && (
         <ManufacturerStep
           repairCategoryId={repairCategory.id ?? 0}
           onBack={goBack}
@@ -98,7 +87,7 @@ export default function RepairFlowScreen() {
         />
       )}
 
-      {manufacturer && step === 3 && (
+      {manufacturer && step === 2 && (
         <ModelStep
           manufacturerId={manufacturer.id ?? 0}
           onBack={goBack}
@@ -108,7 +97,16 @@ export default function RepairFlowScreen() {
           }}
         />
       )}
-
+      {step === 3 && (
+        <ServiceTypeStep
+          repairCategoryId={repairCategory?.id ?? 0}
+          onBack={goBack}
+          onNext={(data: serviceType) => {
+            setServiceType(data);
+            goNext();
+          }}
+        />
+      )}
       {serviceType && step === 4 && (
         <ProblemStep
           serviceTypeId={serviceType.id ?? 0}

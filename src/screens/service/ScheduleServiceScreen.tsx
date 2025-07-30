@@ -2,8 +2,9 @@
 import { responsive } from "@/hooks/resposive";
 import AddressInputWithSuggestions from "@/src/component/common/AddressInputWithSuggestions";
 import CurvedShape from "@/src/component/ui/CurvedBackground ";
+import { addressDescription } from "@/src/redux/slice/serviceRequestSlice";
 import { Routes } from "@/src/utils/Routes";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -19,9 +20,7 @@ import {
 
 const ScheduleServiceScreen = ({ navigation }: any) => {
   const [delivery, setDelivery] = useState("pickup_dropoff");
-  const [address, setAddress] = useState("");
   const [descriptions, setDescriptions] = useState([""]);
-  const [locationSuggestions, setLocationSuggestions] = useState<[]>([]);
 
   const addMoreDescription = () => {
     setDescriptions([...descriptions, ""]);
@@ -37,43 +36,9 @@ const ScheduleServiceScreen = ({ navigation }: any) => {
     const updatedDescriptions = descriptions.filter((_, i) => i !== index);
     setDescriptions(updatedDescriptions);
   };
-
-  const fetchLocationSuggestions = async (input: string) => {
-    setAddress(input);
-    const APIKEY = "AIzaSyCtg6oeRPEkRL9_CE-us3QdvXjupbgG14A";
-    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
-      input
-    )}&key=${APIKEY}&types=(cities)`;
-    try {
-      const res = await fetch(url);
-      const json = await res.json();
-      console.log("Location suggestions:", json);
-      if (json.status === "OK") setLocationSuggestions(json.predictions);
-      else setLocationSuggestions([]);
-    } catch (e) {
-      console.error("Places autocomplete error", e);
-      setLocationSuggestions([]);
-    }
-  };
-  // const getPlaceDetails = async (placeId: string) => {
-  //   try {
-  //     const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${APIKEY}`;
-
-  //     const response = await fetch(detailsUrl);
-  //     const data = await response.json();
-
-  //     if (data.status === "OK") {
-  //       const result = data.result;
-  //       console.log("Formatted Address:", result.formatted_address);
-  //       console.log("Coordinates:", result.geometry.location);
-  //       return result;
-  //     } else {
-  //       console.warn("Error fetching place details:", data.status);
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to fetch place details", error);
-  //   }
-  // };
+  useEffect(() => {
+    addressDescription(descriptions);
+  }, [descriptions]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
