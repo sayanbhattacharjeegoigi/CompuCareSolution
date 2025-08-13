@@ -1,6 +1,10 @@
-import { api_add_service_request } from "@/src/apis/ApiEndPoint";
+import {
+  api_add_service_request,
+  api_get_slots,
+  api_schedule_request,
+} from "@/src/apis/ApiEndPoint";
 import { CallApi_Without_Token } from "@/src/apis/ApiRequest";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../store/Store";
 
 interface ServiceRequestPayload {
@@ -18,6 +22,8 @@ interface ServiceRequestState {
   serviceTypeId: string | null;
   address: any;
   description: string[];
+  slots: any[];
+  scheduleMessage: string | null;
   message: string | null;
   error: string | null;
 }
@@ -28,6 +34,8 @@ const initialState: ServiceRequestState = {
   serviceTypeId: null,
   address: {},
   description: [],
+  slots: [],
+  scheduleMessage: null,
   message: null,
   error: null,
 };
@@ -110,3 +118,41 @@ export const submitServiceRequest =
       dispatch(requestFailure(error.message || "Unexpected error"));
     }
   };
+// Get available slots for selected date
+export const fetchAvailableSlots = createAsyncThunk(
+  "serviceRequest/fetchAvailableSlots",
+  async (
+    {
+      requestId,
+      serviceTypeId,
+      date,
+      timezone,
+    }: {
+      requestId: number;
+      serviceTypeId: string;
+      date: string;
+      timezone: string;
+    },
+    thunkAPI
+  ) => {
+    const res = await CallApi_Without_Token(api_get_slots, {
+      requestId,
+      service_type_id: serviceTypeId,
+      date,
+      user_timezone: timezone,
+    });
+
+    if (res?.slots) return res.slots;
+    else throw new Error("Failed to fetch slots");
+  }
+);
+
+// Schedule service with selected slot
+export const scheduleFinalService = createAsyncThunk(
+  "serviceRequest/scheduleFinalService",
+  async (payload: any, thunkAPI) => {
+    const res = await CallApi_Without_Token(api_schedule_request, payload);
+    if (res?.status === "1") return res;
+    else throw new Error(res?.message || "Failed to schedule");
+  }
+);

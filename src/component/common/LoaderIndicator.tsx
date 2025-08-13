@@ -1,5 +1,5 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import React from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 type LoaderIndicatorProps = {
   isLoading: boolean;
 };
@@ -8,7 +8,7 @@ const LoaderIndicator: React.FC<LoaderIndicatorProps> = ({ isLoading }) => {
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color="#FF0000" />
+      <ActivityIndicator size="large" color="#11BFB6" />
     </View>
   );
 };

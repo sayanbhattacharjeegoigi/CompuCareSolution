@@ -65,8 +65,9 @@ const CategoryStep = ({ onNext }: CategoryStepProps) => {
                   source={{ uri: item?.image }}
                   style={styles.icon}
                   resizeMode="contain"
+                  defaultSource={require("@/assets/images/splash-icon.png")}
                 />
-                <Text style={styles.label}>{item?.description}</Text>
+                <Text style={styles.label}>{item?.name}</Text>
               </TouchableOpacity>
             ))}
           </View>

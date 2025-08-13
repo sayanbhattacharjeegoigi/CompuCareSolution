@@ -78,7 +78,7 @@ const ServiceTypeStep: React.FC<Props> = ({
                   style={styles.icon}
                   resizeMode="contain"
                 />
-                <Text style={styles.label}>{item.description}</Text>
+                <Text style={styles.label}>{item.name}</Text>
               </TouchableOpacity>
             ))}
           </View>

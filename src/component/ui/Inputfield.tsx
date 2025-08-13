@@ -7,6 +7,7 @@ interface InputfieldProps {
   value?: string;
   onChangeText?: (text: string) => void;
   secureTextEntry?: boolean;
+  error?: string; // <-- Add this
   [key: string]: any;
 }
 
@@ -15,19 +16,24 @@ const Inputfield: React.FC<InputfieldProps> = ({
   value,
   onChangeText,
   secureTextEntry = false,
+  error = "", // <-- Default to empty string
   ...rest
 }) => {
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          error ? styles.inputError : null, // red border if error
+        ]}
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
         placeholderTextColor="#fff"
         {...rest}
       />
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 };
@@ -50,5 +56,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 2,
     padding: responsive.number(10),
+  },
+  inputError: {
+    borderColor: "#FF6B6B",
+  },
+  errorText: {
+    marginTop: responsive.number(8),
+    color: "#FF6B6B",
+    fontSize: responsive.fontSize(12),
   },
 });

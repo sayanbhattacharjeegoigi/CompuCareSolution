@@ -2,9 +2,8 @@
 import { responsive } from "@/hooks/resposive";
 import AddressInputWithSuggestions from "@/src/component/common/AddressInputWithSuggestions";
 import CurvedShape from "@/src/component/ui/CurvedBackground ";
-import { addressDescription } from "@/src/redux/slice/serviceRequestSlice";
 import { Routes } from "@/src/utils/Routes";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -17,10 +16,17 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+const paymentOptions = [
+  { label: "Pay by Card", value: "card" },
+  { label: "Cash on Drop-Off", value: "cash" },
+];
 
 const ScheduleServiceScreen = ({ navigation }: any) => {
   const [delivery, setDelivery] = useState("pickup_dropoff");
   const [descriptions, setDescriptions] = useState([""]);
+  const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0].value);
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState<any>(null);
 
   const addMoreDescription = () => {
     setDescriptions([...descriptions, ""]);
@@ -36,9 +42,17 @@ const ScheduleServiceScreen = ({ navigation }: any) => {
     const updatedDescriptions = descriptions.filter((_, i) => i !== index);
     setDescriptions(updatedDescriptions);
   };
-  useEffect(() => {
-    addressDescription(descriptions);
-  }, [descriptions]);
+
+  const handelNext = () => {
+    let payload = {
+      deliveryType: delivery,
+      descriptions,
+      paymentMethod,
+      phone,
+      address,
+    };
+    navigation.navigate(Routes.ScheduleScreen, { payload });
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -89,9 +103,41 @@ const ScheduleServiceScreen = ({ navigation }: any) => {
                   <Text style={styles.radioText}>Self Delivery + Pick-up</Text>
                 </TouchableOpacity>
               </View>
+              {/* Phone */}
+              <Text style={styles.label}>Phone Number</Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="phone-pad"
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="Enter your phone number"
+              />
+
+              {/* Payment Method */}
+              <Text style={styles.label}>Payment Method</Text>
+              <View style={styles.radioGroup}>
+                {paymentOptions.map((opt) => (
+                  <TouchableOpacity
+                    key={opt.value}
+                    onPress={() => setPaymentMethod(opt.value)}
+                    style={styles.radioOption}
+                  >
+                    <View
+                      style={[
+                        styles.radioCircle,
+                        paymentMethod === opt.value && styles.selected,
+                      ]}
+                    />
+                    <Text style={styles.radioText}>{opt.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
 
               {/* Address Input */}
-              <AddressInputWithSuggestions />
+              <AddressInputWithSuggestions
+                selectedAddress={address}
+                setSelectedAddress={(val) => setAddress(val)}
+              />
               {/* Descriptions */}
               {descriptions.map((desc, index) => (
                 <View key={index} style={styles.descriptionGroup}>
@@ -128,7 +174,7 @@ const ScheduleServiceScreen = ({ navigation }: any) => {
               {/* Navigation Buttons */}
               <View style={styles.footer}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate(Routes.ScheduleScreen)}
+                  onPress={() => handelNext()}
                   style={styles.button}
                 >
                   <Text style={styles.nextText}>Next</Text>

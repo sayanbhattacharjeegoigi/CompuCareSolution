@@ -1,6 +1,7 @@
 import { responsive } from "@/hooks/resposive";
 import { api_signup } from "@/src/apis/ApiEndPoint";
 import { CallApi_Without_Token } from "@/src/apis/ApiRequest";
+import LoaderIndicator from "@/src/component/common/LoaderIndicator";
 import Inputfield from "@/src/component/ui/Inputfield";
 import { Colors } from "@/src/constants/Colors";
 import { hitSlope } from "@/src/constants/HitSlope";
@@ -31,47 +32,87 @@ const Registration = ({ navigation }: { navigation: any }) => {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [alert, setAlert] = useState(""); // if you use SnackBar
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!firstName.trim()) newErrors.firstName = "First name is required";
+    if (!lastName.trim()) newErrors.lastName = "Last name is required";
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email.trim())) {
+      newErrors.email = "Invalid email format";
+    }
+
+    if (!phnNo.trim()) {
+      newErrors.phnNo = "Phone number is required";
+    } else if (!/^\d{10}$/.test(phnNo.trim())) {
+      newErrors.phnNo = "Phone number must be 10 digits";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Confirm your password";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    if (!isRememberMe) {
+      newErrors.terms = "You must accept the terms";
+    }
+
+    setErrors(newErrors);
+
+    // If errors exist, show first one via SnackBar
+    if (Object.keys(newErrors).length > 0) {
+      const firstError = Object.values(newErrors)[0];
+      setAlert(firstError); // if using SnackBar
+      return false;
+    }
+
+    return true;
+  };
+
   const handelRagistration = async () => {
     try {
-      if (
-        firstName &&
-        lastName &&
-        email &&
-        phnNo &&
-        password &&
-        confirmPassword
-      ) {
-        setIsLoading(true);
-        let payload = {
-          fname: firstName,
-          lname: lastName,
-          email: email,
-          phoneNumber: phnNo,
-          password: password,
-          confirmPassword: confirmPassword,
-        };
-        const response = await CallApi_Without_Token(api_signup, payload);
-        if (response?.status === "1") {
-          navigation.navigate(Routes.LogIn);
-          setIsLoading(false);
-        } else {
-          alert(JSON.stringify(response?.error) || "Registration failed");
-          setIsLoading(false);
-        }
+      if (!validateForm()) return;
+
+      setIsLoading(true);
+      let payload = {
+        fname: firstName,
+        lname: lastName,
+        email: email,
+        phoneNumber: phnNo,
+        password: password,
+        confirmPassword: confirmPassword,
+      };
+      const response = await CallApi_Without_Token(api_signup, payload);
+      if (response?.status === "1") {
+        navigation.navigate(Routes.LogIn);
       } else {
-        alert("Please fill all the fields");
+        setAlert(JSON.stringify(response?.error) || "Registration failed");
       }
     } catch (error) {
       console.error("Registration error:", error);
-      alert("An error occurred during registration. Please try again.");
+      setAlert("An error occurred during registration. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0E3C91" }}>
+      <LoaderIndicator isLoading={isLoading} />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
@@ -84,9 +125,7 @@ const Registration = ({ navigation }: { navigation: any }) => {
             bounces={false}
             showsVerticalScrollIndicator={false}
           >
-            <View
-              style={{ flex: 1, width: "100%", backgroundColor: "#1E3A8A" }}
-            >
+            <View style={{ width: "100%", backgroundColor: "#1E3A8A" }}>
               <View style={styles.topContainer}>
                 <View
                   style={{
@@ -113,7 +152,7 @@ const Registration = ({ navigation }: { navigation: any }) => {
                 </View>
               </View>
             </View>
-            <View style={{ flex: 1, width: "100%", backgroundColor: "#fff" }}>
+            <View style={{ width: "100%", backgroundColor: "#fff" }}>
               <View style={styles.bottomContainner}>
                 <Text style={[styles.welcomeTxt, styles.textColor]}>
                   Create an Account
@@ -126,12 +165,14 @@ const Registration = ({ navigation }: { navigation: any }) => {
                   onChangeText={(val) => setFirstName(val)}
                   value={firstName}
                   placeholder="Enter your first name"
+                  error={errors.firstName}
                 />
                 <Inputfield
                   label="Last Name"
                   onChangeText={(val) => setLastName(val)}
                   value={lastName}
                   placeholder="Enter your last name"
+                  error={errors.lastName}
                 />
                 <Inputfield
                   label="Email"
@@ -139,6 +180,7 @@ const Registration = ({ navigation }: { navigation: any }) => {
                   value={email}
                   keyboardType="email-address"
                   placeholder="Enter your email"
+                  error={errors.email}
                 />
                 <Inputfield
                   label="Phone Number"
@@ -146,6 +188,7 @@ const Registration = ({ navigation }: { navigation: any }) => {
                   value={phnNo}
                   placeholder="Enter your phone number"
                   keyboardType="number-pad"
+                  error={errors.phnNo}
                 />
                 <Inputfield
                   label="Password"
@@ -153,12 +196,14 @@ const Registration = ({ navigation }: { navigation: any }) => {
                   value={password}
                   placeholder="Enter your password"
                   secureTextEntry={true}
+                  error={errors.password}
                 />
                 <Inputfield
                   label="Confirm Password"
                   onChangeText={(val) => setConfirmPassword(val)}
                   value={confirmPassword}
                   placeholder="Enter your confirm password"
+                  error={errors.confirmPassword}
                 />
                 <View style={styles.rememberMeContainer}>
                   <Pressable
@@ -256,7 +301,6 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   bottomContainner: {
-    flex: 1,
     width: "100%",
     backgroundColor: "#1E3A8A",
     paddingHorizontal: "14.67%",

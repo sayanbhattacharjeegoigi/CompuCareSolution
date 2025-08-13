@@ -14,3 +14,8 @@ export const api_add_repair_problem: string = "/add-repair-problem";
 export const api_add_repair_problem_by_service_request: string =
   "/repair-problem-by-service-request/";
 export const api_add_service_request: string = "add-service-request";
+export const api_get_slots: string = "get-slots";
+export const api_schedule_request: string = "schedule-service-request";
+export const service_request_list: string = "/service-request-list/";
+export const service_request_details: string = "/service-request-details/";
+export const notification_list: string = "/notification-list/";

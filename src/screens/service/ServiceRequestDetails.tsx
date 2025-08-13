@@ -1,25 +1,50 @@
 import { responsive } from "@/hooks/resposive";
+import { service_request_details } from "@/src/apis/ApiEndPoint";
+import { CallApi_GET } from "@/src/apis/ApiRequest";
 import CurvedShape from "@/src/component/ui/CurvedBackground ";
 import { RequestDetailType } from "@/src/constants/Data";
-import { Ionicons } from "@expo/vector-icons";
+import { showToast } from "@/src/utils/toastUtils";
 import { Image } from "expo-image";
-import React, { JSX } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { JSX, useEffect, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 interface Props {
   route: { params: RequestDetailType };
   navigation: any;
 }
 const ServiceRequestDetails: React.FC<Props> = ({ navigation, route }: any) => {
-  const serviceData = route?.params?.item as RequestDetailType;
+  const serviceId = route?.params?.serviceId;
   console.log("Service Request Details:", route?.params);
 
-  if (!serviceData) {
+  const [serviceData, setServiceData] = useState<RequestDetailType>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const getServiceDetails = () => {
+    setIsLoading(true);
+    CallApi_GET(service_request_details + serviceId)
+      .then((res) => {
+        if (res?.status === 1) {
+          setServiceData(res?.userInfo);
+        } else {
+          showToast({ type: "error", text1: res?.error });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        throw new error();
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      getServiceDetails();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  if (!serviceId) {
     return (
       <View style={styles.container}>
         <Text style={{ fontSize: responsive.fontSize(18), color: "#000" }}>
@@ -41,7 +66,7 @@ const ServiceRequestDetails: React.FC<Props> = ({ navigation, route }: any) => {
           {/* Simple Fields */}
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>Service Request Id:</Text>
-            <Text style={styles.value}>{serviceData?.serviceRequestId}</Text>
+            <Text style={styles.value}>{serviceData?.serviceBookingId}</Text>
           </View>
 
           <View style={styles.fieldGroup}>
@@ -72,7 +97,7 @@ const ServiceRequestDetails: React.FC<Props> = ({ navigation, route }: any) => {
             ]}
           >
             <Text style={styles.label}>Repair Issue:</Text>
-            {serviceData?.repairIssues.map(
+            {serviceData?.repairIssue?.map(
               (issue: string, idx: number): React.ReactElement => (
                 <Text key={idx} style={styles.bulletText}>
                   ● {issue}
@@ -83,11 +108,11 @@ const ServiceRequestDetails: React.FC<Props> = ({ navigation, route }: any) => {
 
           {/* Additional Info */}
           {[
-            { label: "Delivery Type", value: serviceData.deliveryType },
-            { label: "Technician Name", value: serviceData.technicianName },
-            { label: "Technician Email", value: serviceData.technicianEmail },
-            { label: "Technician Phone", value: serviceData.technicianPhone },
-            { label: "Pickup Person", value: serviceData.pickupPerson },
+            { label: "Delivery Type", value: serviceData?.deliveryType },
+            { label: "Technician Name", value: serviceData?.technicianName },
+            { label: "Technician Email", value: serviceData?.technicianEmail },
+            { label: "Technician Phone", value: serviceData?.technicianPhone },
+            { label: "Pickup Person", value: serviceData?.pickupPerson },
           ].map((item, idx) => (
             <View key={idx} style={styles.fieldGroup}>
               <Text style={styles.label}>{item.label}:</Text>
@@ -96,31 +121,25 @@ const ServiceRequestDetails: React.FC<Props> = ({ navigation, route }: any) => {
           ))}
 
           {/* Uploaded Images */}
-          <Text style={[styles.label, { marginTop: 12 }]}>
-            Uploaded Image(s)
-          </Text>
-          <View style={styles.imageRow}>
-            {serviceData.uploadedImages?.length > 0
-              ? serviceData.uploadedImages.map(
-                  (img: string, idx: number): JSX.Element => (
-                    <Image
-                      key={idx}
-                      source={{ uri: img }}
-                      style={styles.imagePlaceholder}
-                    />
-                  )
-                )
-              : [1, 2, 3, 4].map(
-                  (item: number): JSX.Element => (
-                    <TouchableOpacity
-                      key={item}
-                      style={styles.imagePlaceholder}
-                    >
-                      <Ionicons name="add" size={32} color="#000" />
-                    </TouchableOpacity>
-                  )
-                )}
-          </View>
+          {serviceData?.uploadedImages && (
+            <View>
+              <Text style={[styles.label, { marginTop: 12 }]}>
+                Uploaded Image(s)
+              </Text>
+              <View style={styles.imageRow}>
+                {serviceData?.uploadedImages?.length > 0 &&
+                  serviceData?.uploadedImages?.map(
+                    (img: string, idx: number): JSX.Element => (
+                      <Image
+                        key={idx}
+                        source={{ uri: img }}
+                        style={styles.imagePlaceholder}
+                      />
+                    )
+                  )}
+              </View>
+            </View>
+          )}
         </ScrollView>
       </CurvedShape>
     </View>

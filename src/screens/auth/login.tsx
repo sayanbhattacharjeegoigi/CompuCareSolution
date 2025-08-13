@@ -6,12 +6,14 @@ import { hitSlope } from "@/src/constants/HitSlope";
 import { login } from "@/src/redux/slice/authSlice";
 import type { RootState } from "@/src/redux/store/Store";
 import { Routes } from "@/src/utils/Routes";
+import { showToast } from "@/src/utils/toastUtils";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import type { ThunkDispatch } from "@reduxjs/toolkit";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -21,6 +23,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,137 +32,174 @@ const Login = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
-
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  const [alert, setAlert] = useState("");
   const dispatch = useDispatch<ThunkDispatch<RootState, any, any>>(); // <-- type the dispatch hook for thunks
   const { loading, error } = useSelector((state: any) => state.auth);
+
+  const validateForm = () => {
+    let isValid = true;
+
+    if (!email.trim()) {
+      setEmailError("Email is required");
+      showToast({ type: "error", text1: "Email is required" });
+      isValid = false;
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email.trim())) {
+      setEmailError("Invalid email format");
+      showToast({ type: "error", text1: "Invalid email format" });
+
+      isValid = false;
+    } else {
+      setEmailError("");
+    }
+
+    if (!password.trim()) {
+      setPasswordError("Password is required");
+      showToast({ text1: "Password is required", type: "error" });
+      isValid = false;
+    } else {
+      setPasswordError("");
+    }
+
+    return isValid;
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <LoaderIndicator isLoading={loading} />
-      <ScrollView
-        bounces={false}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        style={{ width: responsive.deviceWidth }}
-      >
-        <View style={{ flex: 1, width: "100%", backgroundColor: "#1E3A8A" }}>
-          <View style={styles.topContainer}>
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "flex-end",
-              }}
-            >
-              <View style={styles.externalView}>
-                <LinearGradient
-                  // Background Linear Gradient
-                  colors={["#1E3A8A", "#20B2AA"]}
-                  style={styles.background}
-                />
-              </View>
 
-              <Image
-                source={require("../../../assets/images/frontViewMan.png")}
-                style={{
-                  height: responsive.deviceHeight * 0.45,
-                  resizeMode: "contain",
-                  bottom: responsive.number(10),
-                }}
-              />
-            </View>
-          </View>
-        </View>
-        <View style={{ flex: 1, width: "100%", backgroundColor: "#fff" }}>
-          <KeyboardAvoidingView
-            style={{ flex: 1, width: "100%" }}
-            contentContainerStyle={{ width: "100%" }}
-            behavior={Platform.OS === "ios" ? "position" : "position"}
-            keyboardVerticalOffset={
-              Platform.OS === "ios" ? 0 : StatusBar.currentHeight || 0
-            }
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
-            <View style={styles.bottomContainner}>
-              <Text style={[styles.welcomeTxt, styles.textColor]}>
-                Welcome Back
-              </Text>
-              <Text style={[styles.enterTxt, styles.textColor]}>
-                Welcome back. Please enter your details.
-              </Text>
-              <Inputfield
-                label="email"
-                onChangeText={(val) => setEmail(val)}
-                value={email}
-                placeholder="email"
-              />
-              <Inputfield
-                label="password"
-                onChangeText={(val) => setPassword(val)}
-                value={password}
-                secureTextEntry={true}
-                placeholder="password"
-              />
-              <View style={styles.rememberMeContainer}>
-                <Pressable
+            <View style={{ width: "100%", backgroundColor: "#1E3A8A" }}>
+              <View style={styles.topContainer}>
+                <View
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <View style={styles.externalView}>
+                    <LinearGradient
+                      // Background Linear Gradient
+                      colors={["#1E3A8A", "#20B2AA"]}
+                      style={styles.background}
+                    />
+                  </View>
+
+                  <Image
+                    source={require("../../../assets/images/frontViewMan.png")}
+                    style={{
+                      height: responsive.deviceHeight * 0.45,
+                      resizeMode: "contain",
+                      bottom: responsive.number(10),
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+            <View style={{ width: "100%", backgroundColor: "#fff" }}>
+              <View style={styles.bottomContainner}>
+                <Text style={[styles.welcomeTxt, styles.textColor]}>
+                  Welcome Back
+                </Text>
+                <Text style={[styles.enterTxt, styles.textColor]}>
+                  Welcome back. Please enter your details.
+                </Text>
+                <Inputfield
+                  label="email"
+                  onChangeText={(val) => {
+                    setEmail(val);
+                    if (emailError) setEmailError(""); // clear on change
+                  }}
+                  value={email}
+                  placeholder="email"
+                  error={emailError}
+                />
+                <Inputfield
+                  label="password"
+                  onChangeText={(val) => {
+                    setPassword(val);
+                    if (passwordError) setPasswordError("");
+                  }}
+                  value={password}
+                  secureTextEntry={true}
+                  placeholder="password"
+                  error={passwordError}
+                />
+                <View style={styles.rememberMeContainer}>
+                  <Pressable
+                    onPress={() => {
+                      setIsRememberMe((prev) => !prev);
+                    }}
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <FontAwesome
+                      name={isRememberMe ? "check-square" : "square-o"}
+                      size={24}
+                      color="#fff"
+                    />
+                    <Text
+                      style={[
+                        styles.textColor,
+                        { marginLeft: responsive.number(5) },
+                      ]}
+                    >
+                      Remember me
+                    </Text>
+                  </Pressable>
+                  <Text
+                    style={[{ flex: 1, textAlign: "right" }, styles.textColor]}
+                  >
+                    Forgot Password?
+                  </Text>
+                </View>
+
+                <TouchableOpacity
                   onPress={() => {
-                    setIsRememberMe((prev) => !prev);
+                    if (validateForm()) {
+                      dispatch(login(email.trim(), password));
+                    }
+                  }}
+                  style={styles.signinButton}
+                >
+                  <Text style={styles.siginText}>Sign in</Text>
+                </TouchableOpacity>
+
+                <Pressable
+                  hitSlop={hitSlope}
+                  onPress={() => {
+                    navigation.navigate(Routes.Registration);
                   }}
                   style={{
-                    flex: 1,
-                    flexDirection: "row",
+                    marginTop: responsive.number(20),
                     alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  <FontAwesome
-                    name={isRememberMe ? "check-square" : "square-o"}
-                    size={24}
-                    color="#fff"
-                  />
-                  <Text
-                    style={[
-                      styles.textColor,
-                      { marginLeft: responsive.number(5) },
-                    ]}
-                  >
-                    Remember me
+                  <Text style={styles.registerText}>
+                    Don’t have an account?
+                    <Text style={styles.registerTextColor}> Register now</Text>
                   </Text>
                 </Pressable>
-                <Text
-                  style={[{ flex: 1, textAlign: "right" }, styles.textColor]}
-                >
-                  Forgot Password?
-                </Text>
               </View>
-
-              <TouchableOpacity
-                onPress={() => {
-                  // navigation.navigate(Routes.Tab, { screen: Routes.Home });
-                  dispatch(login(email, password));
-                }}
-                style={styles.signinButton}
-              >
-                <Text style={styles.siginText}>Sign in</Text>
-              </TouchableOpacity>
-
-              <Pressable
-                hitSlop={hitSlope}
-                onPress={() => {
-                  navigation.navigate(Routes.Registration);
-                }}
-                style={{
-                  marginTop: responsive.number(20),
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={styles.registerText}>
-                  Don’t have an account?
-                  <Text style={styles.registerTextColor}> Register now</Text>
-                </Text>
-              </Pressable>
             </View>
-          </KeyboardAvoidingView>
-        </View>
-      </ScrollView>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

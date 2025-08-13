@@ -66,6 +66,10 @@ const AppNavigator = () => {
               name={Routes.ScheduleScreen}
               component={screens.ScheduleScreen}
             />
+            <RootStack.Screen
+              name={Routes.PaymentScreen}
+              component={screens.PaymentScreen as React.ComponentType<any>}
+            />
           </>
         ) : (
           // 🔒 Not logged in, show login/register

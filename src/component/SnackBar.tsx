@@ -1,45 +1,35 @@
+// SnackBar.tsx
+import { responsive } from "@/hooks/resposive";
 import React from "react";
-import { Modal, View, Text, Pressable } from "react-native";
+import Toast from "react-native-toast-message";
+
+export const TIME_LENGTH = {
+  LONG: 10000,
+  SHORT: 5000,
+};
+
 interface PropType {
   alert: string;
-  setAlert: any;
+  setAlert: (val: string) => void;
   type: "LONG" | "SHORT";
 }
-export const TIME_LENGTH = {
-  LONG: 2000,
-  SHORT: 500,
-};
-export default function SnackBar({ alert, setAlert, type }: PropType) {
-  if (alert.length > 0) {
-    setTimeout(function () {
-      setAlert("");
-    }, TIME_LENGTH[type]);
-  }
-  return (
-    <Modal visible={alert.length > 0} transparent={true}>
-      <Pressable
-        onPress={() => setAlert(false)}
-        style={{
-          flex: 1,
-          padding: 12,
-          zIndex: 99,
-        }}
-      >
-        <View
-          style={{
-            width: "100%",
-            marginTop: "auto",
-            padding: 12,
-            minHeight: 60,
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "#000000",
-            elevation: 8,
-          }}
-        >
-          <Text style={{ color: "#FFFFFF", fontSize: 15 }}>{alert}</Text>
-        </View>
-      </Pressable>
-    </Modal>
-  );
+
+// This component just initializes Toast. Nothing visual here.
+export function SnackBar({ alert, setAlert, type }: PropType) {
+  React.useEffect(() => {
+    if (alert.length > 0) {
+      console.log("SnackBar alert:", alert);
+      Toast.show({
+        position: "bottom",
+        bottomOffset: responsive.number(10),
+        avoidKeyboard: true,
+        type: "info",
+        text1: alert,
+        visibilityTime: TIME_LENGTH[type],
+        onHide: () => setAlert(""),
+      });
+    }
+  }, [alert]);
+
+  return <Toast />;
 }

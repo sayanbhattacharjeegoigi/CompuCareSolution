@@ -9,4 +9,5 @@ export const Routes = {
   RepairFlow: "RepairFlow",
   ScheduleServiceScreen: "ScheduleServiceScreen",
   ScheduleScreen: "ScheduleScreen",
+  PaymentScreen: "PaymentScreen",
 };

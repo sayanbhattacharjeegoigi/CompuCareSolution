@@ -1,5 +1,4 @@
 import { responsive } from "@/hooks/resposive";
-import { addressStore } from "@/src/redux/slice/serviceRequestSlice";
 import React, { useState } from "react";
 import {
   FlatList,
@@ -23,8 +22,24 @@ if (
 }
 
 const APIKEY = "AIzaSyCtg6oeRPEkRL9_CE-us3QdvXjupbgG14A"; // Replace in prod
-
-const AddressInputWithSuggestions = () => {
+interface AddressData {
+  fullAddress: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  latitude: number | null;
+  longitude: number | null;
+  placeId: string;
+}
+interface props {
+  selectedAddress: string;
+  setSelectedAddress: (address: AddressData) => void;
+}
+const AddressInputWithSuggestions: React.FC<props> = ({
+  selectedAddress,
+  setSelectedAddress,
+}) => {
   const dispatch = useDispatch();
   const [address, setAddress] = useState("");
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -34,14 +49,14 @@ const AddressInputWithSuggestions = () => {
   const fetchLocationSuggestions = async (input: string) => {
     const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
       input
-    )}&key=${APIKEY}&types=(cities)`;
+    )}&key=${APIKEY}`;
 
     try {
       const res = await fetch(url);
       const json = await res.json();
       if (json.status === "OK") {
         LayoutAnimation.easeInEaseOut();
-        setSuggestions(json.predictions);
+        setSuggestions(json?.predictions);
         setShowSuggestions(true);
       } else {
         setSuggestions([]);
@@ -84,9 +99,8 @@ const AddressInputWithSuggestions = () => {
 
       if (data.status === "OK") {
         const structured = extractAddressFields(data.result);
-        dispatch(addressStore(structured));
+        setSelectedAddress(structured);
         setSelectedPlaceData(structured);
-        console.log("Selected Place Data:", structured);
       } else {
         console.warn("Error fetching place details:", data.status);
       }

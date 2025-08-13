@@ -1,17 +1,64 @@
 import { responsive } from "@/hooks/resposive";
-import { dummyNotifications } from "@/src/constants/Data";
-import { Routes } from "@/src/utils/Routes";
+import { notification_list } from "@/src/apis/ApiEndPoint";
+import { CallApi_GET } from "@/src/apis/ApiRequest";
+import LoaderIndicator from "@/src/component/common/LoaderIndicator";
+import { notificationListType } from "@/src/constants/Data";
+import { showToast } from "@/src/utils/toastUtils";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
+  RefreshControl,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSelector } from "react-redux";
 
 const Notification = ({ navigation }: any) => {
+  const { userDetails } = useSelector((state: any) => state.auth);
+  const [notificationList, setNotificationList] = useState<
+    notificationListType[]
+  >([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const getServiceList = async (fromRefresh = false) => {
+    if (fromRefresh) {
+      setRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+
+    try {
+      const res = await CallApi_GET(notification_list + userDetails?.userId);
+      if (res?.status) {
+        const uniqueList = res?.list?.filter(
+          (item, index, self) =>
+            index === self.findIndex((t) => t.id === item.id)
+        );
+        setNotificationList(uniqueList);
+      } else {
+        showToast({ type: "error", text1: res?.error });
+      }
+    } catch (error) {
+      console.log("Notification Fetch Error:", error);
+      showToast({ type: "error", text1: "Failed to fetch notifications" });
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      getServiceList();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <View style={[styles.container, { backgroundColor: "#1E3A8A" }]}>
       <View
@@ -23,26 +70,54 @@ const Notification = ({ navigation }: any) => {
           },
         ]}
       >
-        <FlatList
-          data={dummyNotifications}
-          style={{ marginTop: responsive.number(40) }}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate(Routes.NotificationDetails, {
-                  notification: item,
-                });
-              }}
-              style={styles.notificationCard}
-            >
-              <View style={styles.iconContainer}>
-                <Ionicons name="notifications" size={20} color="#1E3A8A" />
-              </View>
-              <Text style={styles.notificationTitle}>{item.title}</Text>
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item) => item.id}
-        />
+        <LoaderIndicator isLoading={isLoading} />
+        <View
+          style={{
+            flex: 1,
+            width: "100%",
+            paddingHorizontal: responsive.number(30),
+            paddingVertical: responsive.number(30),
+          }}
+        >
+          <FlatList
+            data={notificationList}
+            style={{ marginTop: responsive.number(10) }}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => getServiceList(true)}
+                colors={["#11BFB6"]}
+                tintColor="#11BFB6"
+              />
+            }
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                // onPress={() => {
+                //   navigation.navigate(Routes.NotificationDetails, {
+                //     notification: item,
+                //   });
+                // }}
+                style={styles.notificationCard}
+              >
+                <View style={styles.iconContainer}>
+                  <Ionicons name="notifications" size={20} color="#1E3A8A" />
+                </View>
+                <Text style={styles.notificationTitle}>
+                  {item?.message?.trim() || "No message available."}
+                </Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item?.id?.toString()}
+            ListEmptyComponent={
+              !isLoading ? (
+                <Text style={{ textAlign: "center", marginTop: 20 }}>
+                  No notifications available.
+                </Text>
+              ) : null
+            }
+          />
+        </View>
       </View>
     </View>
   );
@@ -59,13 +134,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
 
-  scrollContainer: {
-    padding: responsive.number(16),
-  },
-
   notificationCard: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-start",
     backgroundColor: "#fff",
     borderColor: "#ccc",
     borderWidth: 1,
@@ -81,7 +153,7 @@ const styles = StyleSheet.create({
   },
 
   iconContainer: {
-    backgroundColor: "#11BFB6", // teal background for icon
+    backgroundColor: "#11BFB6",
     borderRadius: responsive.number(10),
     padding: responsive.number(8),
     marginRight: responsive.number(12),
@@ -93,42 +165,7 @@ const styles = StyleSheet.create({
     fontSize: responsive.fontSize(16),
     fontWeight: "600",
     color: "#000",
-    flexShrink: 1,
-  },
-
-  tabBarContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    paddingVertical: responsive.number(12),
-    backgroundColor: "#1C3886", // dark blue
-    borderTopLeftRadius: responsive.number(40),
-    borderTopRightRadius: responsive.number(40),
-  },
-
-  tabItem: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  activeTab: {
-    backgroundColor: "#11BFB6",
-    borderRadius: responsive.number(16),
-    paddingHorizontal: responsive.number(16),
-    paddingVertical: responsive.number(6),
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  activeTabText: {
-    color: "#1C3886",
-    fontWeight: "bold",
-    marginLeft: responsive.number(6),
-  },
-
-  tabText: {
-    color: "#11BFB6",
-    marginTop: responsive.number(4),
-    fontSize: responsive.fontSize(12),
+    flex: 1,
+    flexWrap: "wrap",
   },
 });

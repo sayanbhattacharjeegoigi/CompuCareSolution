@@ -36,7 +36,7 @@ export default function RepairFlowScreen() {
   const [manufacturer, setManufacturer] = useState<manufacturerType>();
   const [model, setModel] = useState<modelListType>();
   const [problems, setProblems] = useState<problemListType[]>([]);
-
+  const [alert, setAlert] = useState("");
   // Replace this with your actual user ID retrieval logic
   const userId = user?.userId;
 
@@ -60,7 +60,9 @@ export default function RepairFlowScreen() {
   };
   useEffect(() => {
     if (requestId && message && !loading && !error) {
-      navigation.navigate(Routes.ScheduleServiceScreen);
+      setTimeout(() => {
+        navigation.navigate(Routes.ScheduleServiceScreen);
+      }, 1000);
     }
   }, [requestId, message, loading, error]);
   return (

@@ -53,18 +53,22 @@ export const requestDetails = [
   },
 ];
 export interface RequestDetailType {
-  serviceRequestId: string;
+  requestId: number;
+  serviceBookingId: string;
   repairCategory: string;
   serviceRequestType: string;
   brand: string;
   model: string;
-  repairIssues: string[];
+  repairIssue: string[]; // renamed from `repairIssues` to match JSON
   deliveryType: string;
   technicianName: string;
   technicianEmail: string;
   technicianPhone: string;
   pickupPerson: string;
-  uploadedImages: string[]; // can be URLs or local file names/placeholders
+  pickupStatus: string;
+  pickupDate: string;
+  pickupTime: string;
+  uploadedImages?: string[]; // optional if not always present
 }
 
 // notification
@@ -179,4 +183,19 @@ export interface RepairRequestPayload {
   model_id: string;
   service_type_id: string;
   repair_issue_id: number[]; // Array of issue IDs
+}
+export interface slotsType {
+  time: string;
+  status: string;
+}
+export interface serviceListType {
+  requestId: number;
+  serviceBookingId: string;
+  status: string;
+}
+
+export interface notificationListType {
+  id: number;
+  message: string;
+  created_at: string;
 }

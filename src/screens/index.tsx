@@ -4,6 +4,7 @@ import Home from "./home";
 import RepairFlowScreen from "./home/RepairFlow/RepairFlowScreen";
 import NotificationDetails from "./notification/NotificationDetails";
 import ScheduleScreen from "./service/CalendarSlotSelector";
+import PaymentScreen from "./service/PaymentScreen";
 import ScheduleServiceScreen from "./service/ScheduleServiceScreen";
 import ServiceRequestDetails from "./service/ServiceRequestDetails";
 
@@ -16,4 +17,5 @@ export default {
   RepairFlowScreen,
   ScheduleServiceScreen,
   ScheduleScreen,
+  PaymentScreen,
 };
