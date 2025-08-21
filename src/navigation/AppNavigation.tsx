@@ -70,6 +70,14 @@ const AppNavigator = () => {
               name={Routes.PaymentScreen}
               component={screens.PaymentScreen as React.ComponentType<any>}
             />
+            <RootStack.Screen
+              name={Routes.PaymentResultScreen}
+              component={screens.PaymentResultScreen}
+            />
+            <RootStack.Screen
+              name={Routes.ContactInformation}
+              component={screens.ContactInformation}
+            />
           </>
         ) : (
           // 🔒 Not logged in, show login/register

@@ -10,15 +10,33 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
 
 const Home = ({ navigation }: any) => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state: any) => state.auth);
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      // Any logic you want to run when the screen is focused
-      dispatch(fetchUserDetails());
+    const unsubscribe = navigation.addListener("focus", async () => {
+      const user = await dispatch(fetchUserDetails() as any);
+      if (
+        !user?.city ||
+        !user?.state ||
+        !user?.country ||
+        !user?.zip_code ||
+        !user?.phoneNumber
+      ) {
+        Toast.show({
+          visibilityTime: 2000,
+          type: "info",
+          text1: "Please complete your profile",
+          text2:
+            "You need to fill in your contact information before proceeding.",
+          onHide: () => {
+            navigation.navigate(Routes.ContactInformation);
+          },
+        });
+      }
     });
 
     return unsubscribe;

@@ -41,7 +41,7 @@ const AddressInputWithSuggestions: React.FC<props> = ({
   setSelectedAddress,
 }) => {
   const dispatch = useDispatch();
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState<string>(selectedAddress || "");
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedPlaceData, setSelectedPlaceData] = useState<any>(null);
@@ -129,7 +129,9 @@ const AddressInputWithSuggestions: React.FC<props> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Address</Text>
+      <Text style={styles.label}>
+        Address <Text style={{ color: "#FF0000" }}>*</Text>
+      </Text>
       <TextInput
         style={styles.input}
         placeholder="Enter your city or address"

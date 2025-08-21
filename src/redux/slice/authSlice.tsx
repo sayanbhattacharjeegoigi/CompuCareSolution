@@ -168,6 +168,7 @@ export const fetchUserDetails = (): AppThunk => async (dispatch) => {
         profile_description: res.userInfo.profile_description,
       };
       dispatch(userDetailsSuccess(user));
+      return user; // ✅ return the user so the screen can check
     } else {
       dispatch(
         userDetailsFailure(res?.error || "Failed to fetch user details")

@@ -5,6 +5,7 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 interface InputfieldProps {
   label?: string;
   value?: string;
+  mendatory?: boolean;
   onChangeText?: (text: string) => void;
   secureTextEntry?: boolean;
   error?: string; // <-- Add this
@@ -15,13 +16,19 @@ const Inputfield: React.FC<InputfieldProps> = ({
   label,
   value,
   onChangeText,
+  mendatory = false,
   secureTextEntry = false,
   error = "", // <-- Default to empty string
   ...rest
 }) => {
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && (
+        <Text style={styles.label}>
+          {label}
+          {mendatory && <Text style={{ color: "#FF0000" }}>*</Text>}
+        </Text>
+      )}
       <TextInput
         style={[
           styles.input,

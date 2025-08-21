@@ -1,3 +1,4 @@
+import { responsive } from "@/hooks/resposive";
 import { AntDesign } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -20,6 +21,7 @@ interface Props {
   onValueChange: (value: string | number) => void;
   placeholder?: string;
   label?: string;
+  mandetory?: boolean;
 }
 
 const CustomDropdown: React.FC<Props> = ({
@@ -28,6 +30,7 @@ const CustomDropdown: React.FC<Props> = ({
   onValueChange,
   placeholder = "Select",
   label = "",
+  mandetory = false,
 }) => {
   const [visible, setVisible] = useState(false);
 
@@ -35,10 +38,11 @@ const CustomDropdown: React.FC<Props> = ({
     items.find((item) => item.value === selectedValue)?.label || placeholder;
 
   return (
-    <View style={{ marginBottom: 16 }}>
+    <View style={{}}>
       {label ? (
         <Text allowFontScaling={false} style={styles.label}>
-          {label}
+          {label}{" "}
+          {mandetory ? <Text style={{ color: "#FF0000" }}>*</Text> : null}
         </Text>
       ) : null}
       <TouchableOpacity
@@ -84,9 +88,11 @@ const CustomDropdown: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: 14,
-    color: "#555",
-    marginBottom: 4,
+    fontSize: responsive.fontSize(16),
+    fontWeight: "600",
+    marginTop: responsive.number(20),
+    marginBottom: responsive.number(8),
+    color: "#333",
   },
   dropdown: {
     flexDirection: "row",
@@ -94,9 +100,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderRadius: responsive.number(8),
+    padding: responsive.number(10),
     backgroundColor: "#fff",
   },
   dropdownText: {

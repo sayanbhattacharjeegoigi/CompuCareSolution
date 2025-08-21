@@ -1,5 +1,4 @@
 import LoaderIndicator from "@/src/component/common/LoaderIndicator";
-import { clearRequest } from "@/src/redux/slice/serviceRequestSlice";
 import { Routes } from "@/src/utils/Routes";
 import { useNavigation } from "@react-navigation/native";
 import React, { useRef } from "react";
@@ -23,22 +22,29 @@ const PaymentScreen = ({ route }: PaymentScreenProps) => {
 
   const { requestId } = route.params;
 
-  const handleMessage = (event: any) => {
+  const handleMessage = (state: any) => {
     try {
-      const data = JSON.parse(event.nativeEvent.data);
+      const { url } = state;
+      console.log("url", url);
+      const urlObj = new URL(url);
 
-      if (data.status === "succeeded") {
+      let params = {
+        status: urlObj.searchParams.get("status"),
+        txnId: urlObj.searchParams.get("txnId") || "",
+        msg: urlObj.searchParams.get("message"),
+      };
+      console.log("params", params);
+      if (!params?.status) {
+        return;
+      }
+      if (params?.status === "succeeded") {
         Toast.show({
           type: "success",
-          text1: data.message || "Payment Successful!",
-          onHide: () => {
-            // Clear Redux state
-            dispatch(clearRequest());
-
-            // Optionally navigate to Home / Success screen
-            navigation.reset({
-              index: 0,
-              routes: [{ name: Routes.Home }],
+          text1: params.msg || "Payment Successful!",
+          onShow: () => {
+            navigation.navigate(Routes.PaymentResultScreen, {
+              status: "success",
+              txnId: params?.txnId,
             });
           },
         });
@@ -46,11 +52,17 @@ const PaymentScreen = ({ route }: PaymentScreenProps) => {
         Toast.show({
           type: "error",
           text1: "Payment Failed",
-          text2: data.message || "Try again.",
+          text2: params.msg || "Try again.",
+          onShow: () => {
+            navigation.navigate(Routes.PaymentResultScreen, {
+              status: "failure",
+              msg: params?.msg,
+            });
+          },
         });
       }
     } catch (error) {
-      console.warn("Invalid JSON from WebView:", event.nativeEvent.data);
+      // console.warn("Invalid JSON from WebView:", event.nativeEvent.data);
     }
   };
 
@@ -65,6 +77,7 @@ const PaymentScreen = ({ route }: PaymentScreenProps) => {
         domStorageEnabled
         onMessage={handleMessage}
         startInLoadingState
+        onNavigationStateChange={handleMessage}
         renderLoading={() => <LoaderIndicator isLoading={true} />}
       />
     </View>

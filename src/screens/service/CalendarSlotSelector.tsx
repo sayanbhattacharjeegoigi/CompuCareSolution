@@ -1,9 +1,10 @@
 import { responsive } from "@/hooks/resposive";
-import { api_get_slots } from "@/src/apis/ApiEndPoint";
+import { api_get_slots, api_schedule_request } from "@/src/apis/ApiEndPoint";
 import { CallApi_Without_Token } from "@/src/apis/ApiRequest";
 import LoaderIndicator from "@/src/component/common/LoaderIndicator";
 import CurvedShape from "@/src/component/ui/CurvedBackground ";
 import { slotsType } from "@/src/constants/Data";
+import { Routes } from "@/src/utils/Routes";
 // import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment-timezone";
@@ -29,8 +30,9 @@ const availableSelector = (state: any) => ({
   description: state.serviceRequest.description,
 });
 
-export default function ScheduleScreen({ navigation, routes }: any) {
-  const deliveryData = routes?.params?.payload;
+export default function ScheduleScreen({ navigation, route }: any) {
+  const deliveryData = route?.params?.payload;
+  const { userDetails } = useSelector((state: any) => state.auth);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -60,7 +62,7 @@ export default function ScheduleScreen({ navigation, routes }: any) {
       requestId: requestId,
       service_type_id: serviceTypeId,
       date: formattedDate,
-      user_timezone: moment.tz.guess(),
+      user_timezone: userDetails?.timezone || moment.tz.guess(),
     };
     console.log("payload==>", payload);
 
@@ -91,9 +93,10 @@ export default function ScheduleScreen({ navigation, routes }: any) {
 
     const payload = {
       requestId: requestId?.toString(),
+      phoneNumber: deliveryData?.phone,
       delivery_type: deliveryData?.deliveryType,
       address: deliveryData?.address?.fullAddress || "",
-      description: deliveryData?.description?.join(", "),
+      description: deliveryData?.descriptions?.join(", "),
       country: deliveryData?.address?.country,
       state: deliveryData?.address?.state,
       city: deliveryData?.address?.city,
@@ -102,28 +105,36 @@ export default function ScheduleScreen({ navigation, routes }: any) {
       longitude: deliveryData?.address?.longitude,
       slot: selectedSlot,
       date: moment(selectedDate).format("YYYY-MM-DD"),
+      paymentMode: deliveryData?.paymentMethod,
     };
     console.log("Payload for scheduling:", payload);
 
-    // CallApi_Without_Token(api_schedule_request, payload).then((res: any) => {
-    //   if (res?.status === "1") {
-    //     Toast.show({
-    //       type: "success",
-    //       text1: res?.message || "Service scheduled successfully",
-    //       onHide: () => {
-    //         navigation.navigate("PaymentScreen", {
-    //           requestId: requestId?.toString(),
-    //         });
-    //       },
-    //     });
-    //   } else {
-    //     Toast.show({
-    //       type: "error",
-    //       text1: "Failed to schedule",
-    //       text2: res?.error || "Something went wrong",
-    //     });
-    //   }
-    // });
+    CallApi_Without_Token(api_schedule_request, payload).then((res: any) => {
+      if (res?.status === "1") {
+        Toast.show({
+          type: "success",
+          text1: res?.message || "Service scheduled successfully",
+          onHide: () => {
+            if (deliveryData?.paymentMethod === "card") {
+              navigation.navigate(Routes.PaymentScreen, {
+                requestId: requestId?.toString(),
+              });
+            } else {
+              navigation.navigate(Routes.PaymentResultScreen, {
+                status: "success",
+              });
+            }
+          },
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Failed to schedule",
+          text2: res?.error || "Something went wrong",
+        });
+        console.log("res?.error ", res?.error);
+      }
+    });
   };
 
   return (
@@ -173,7 +184,7 @@ export default function ScheduleScreen({ navigation, routes }: any) {
           )}
 
           {isDateSelected && (
-            <>
+            <View style={{ flexShrink: 1 }}>
               <Text style={styles.subtitle}>
                 Available slots for {selectedDate.toDateString()}
               </Text>
@@ -181,6 +192,7 @@ export default function ScheduleScreen({ navigation, routes }: any) {
               <FlatList
                 data={availableSlots}
                 numColumns={2}
+                style={{ marginBottom: responsive.number(100) }}
                 columnWrapperStyle={styles.row}
                 keyExtractor={(item) => item?.time}
                 renderItem={({ item }) => (
@@ -215,21 +227,23 @@ export default function ScheduleScreen({ navigation, routes }: any) {
                     No slots available for this date
                   </Text>
                 }
+                ListFooterComponent={
+                  <TouchableOpacity
+                    style={[
+                      styles.button,
+                      {
+                        opacity:
+                          selectedSlot !== null && isDateSelected ? 1 : 0.5,
+                      },
+                    ]}
+                    disabled={!selectedSlot || !isDateSelected}
+                    onPress={handleSubmit}
+                  >
+                    <Text style={styles.buttonText}>Submit Request</Text>
+                  </TouchableOpacity>
+                }
               />
-
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  {
-                    opacity: selectedSlot !== null && isDateSelected ? 1 : 0.5,
-                  },
-                ]}
-                disabled={!selectedSlot || !isDateSelected}
-                onPress={handleSubmit}
-              >
-                <Text style={styles.buttonText}>Submit Request</Text>
-              </TouchableOpacity>
-            </>
+            </View>
           )}
         </View>
       </CurvedShape>

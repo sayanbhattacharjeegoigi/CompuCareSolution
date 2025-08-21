@@ -2,7 +2,7 @@
   "expo": {
     "name": "CompuCareSolutions",
     "slug": "CompuCareSolutions_Customer",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "compucaresolutionscustomer",
@@ -22,12 +22,20 @@
         "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#ffffff"
       },
-
       "softwareKeyboardLayoutMode": "pan",
       "edgeToEdgeEnabled": true,
       "package": "com.slash7991.CompuCareSolutions_Customer"
     },
-    "plugins": [],
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app needs access to your photos so you can upload and share them.",
+          "cameraPermission": "The app accesses your camera to let you take photos ."
+        }
+      ],
+      "react-native-edge-to-edge"
+    ],
     "extra": {
       "eas": {
         "projectId": "fdb77430-79a5-4723-aa5e-4ec9f0ef0c02"

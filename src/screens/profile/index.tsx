@@ -1,6 +1,8 @@
 import { responsive } from "@/hooks/resposive";
 import { logout } from "@/src/redux/slice/authSlice";
+import { Routes } from "@/src/utils/Routes";
 import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { Image } from "expo-image";
 import React from "react";
 import {
@@ -14,11 +16,13 @@ import { useDispatch, useSelector } from "react-redux";
 
 const Profile = () => {
   const { userDetails } = useSelector((state: any) => state.auth);
+  const navigation = useNavigation();
   const profileOptions = [
     {
       label: "Contact Information",
       icon: <Ionicons name="send" size={20} color="#fff" />,
       route: "ContactInfo",
+      action: () => navigation.navigate(Routes.ContactInformation),
     },
     {
       label: "Saved Addresses",

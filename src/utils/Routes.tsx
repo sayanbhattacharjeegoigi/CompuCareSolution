@@ -10,4 +10,6 @@ export const Routes = {
   ScheduleServiceScreen: "ScheduleServiceScreen",
   ScheduleScreen: "ScheduleScreen",
   PaymentScreen: "PaymentScreen",
+  PaymentResultScreen: "PaymentResultScreen",
+  ContactInformation: "ContactInformation",
 };

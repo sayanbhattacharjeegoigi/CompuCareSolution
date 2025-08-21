@@ -161,6 +161,7 @@ const Service = ({ navigation }: ServiceScreenProps) => {
           <FlatList
             data={serviceList}
             renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => `${item.requestId}-${index}`}
             contentContainerStyle={{ gap: responsive.number(20) }}
             refreshControl={

@@ -1,5 +1,7 @@
 // ScheduleServiceScreen.tsx
 import { responsive } from "@/hooks/resposive";
+import { api_schedule_request } from "@/src/apis/ApiEndPoint";
+import { CallApi_Without_Token } from "@/src/apis/ApiRequest";
 import AddressInputWithSuggestions from "@/src/component/common/AddressInputWithSuggestions";
 import CurvedShape from "@/src/component/ui/CurvedBackground ";
 import { Routes } from "@/src/utils/Routes";
@@ -16,17 +18,53 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-const paymentOptions = [
+import Toast from "react-native-toast-message";
+import { useSelector } from "react-redux";
+
+interface AddressData {
+  fullAddress: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  latitude: number | null;
+  longitude: number | null;
+  placeId: string;
+}
+const allPaymentOptions = [
   { label: "Pay by Card", value: "card" },
-  { label: "Cash on Drop-Off", value: "cash" },
+  { label: "Cash on Drop-Off", value: "Cash on Drop-Off" },
+  { label: "Cash on Pickup", value: "Cash on Pickup" },
 ];
+const deliveryOptions = [
+  { label: "Pick-up + Drop-off", value: "1" },
+  { label: "Self Delivery + Pick-up", value: "2" },
+];
+// Optional: move these to selector.ts
+const availableSelector = (state: any) => ({
+  slots: state.serviceRequest.slots,
+  loading: state.serviceRequest.loading,
+  requestId: state.serviceRequest.requestId,
+  serviceTypeId: state.serviceRequest.serviceTypeId,
+  address: state.serviceRequest.address,
+  description: state.serviceRequest.description,
+});
 
 const ScheduleServiceScreen = ({ navigation }: any) => {
-  const [delivery, setDelivery] = useState("pickup_dropoff");
+  const { userDetails } = useSelector((state: any) => state.auth);
+  const { slots, loading, requestId, serviceTypeId } =
+    useSelector(availableSelector);
+  const [delivery, setDelivery] = useState("1");
   const [descriptions, setDescriptions] = useState([""]);
-  const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0].value);
-  const [phone, setPhone] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState(
+    allPaymentOptions[0].value
+  );
+  const [phone, setPhone] = useState(userDetails?.phoneNumber);
   const [address, setAddress] = useState<any>(null);
+  const [city, setCity] = useState<string>("");
+  const [state, setState] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
+  const [zipCode, setZipCode] = useState<string>("");
 
   const addMoreDescription = () => {
     setDescriptions([...descriptions, ""]);
@@ -42,8 +80,45 @@ const ScheduleServiceScreen = ({ navigation }: any) => {
     const updatedDescriptions = descriptions.filter((_, i) => i !== index);
     setDescriptions(updatedDescriptions);
   };
+  const paymentOptions =
+    delivery === "1"
+      ? allPaymentOptions.filter((opt) => opt.value !== "Cash on Pickup")
+      : allPaymentOptions.filter((opt) => opt.value !== "Cash on Drop-Off");
 
   const handelNext = () => {
+    // Basic field validations
+    if (!delivery) {
+      Toast.show({ type: "error", text1: "Please select a delivery option" });
+      return;
+    }
+    if (!phone || phone.trim().length < 8) {
+      Toast.show({ type: "error", text1: "Please enter a valid phone number" });
+      return;
+    }
+    if (!paymentMethod) {
+      Toast.show({ type: "error", text1: "Please select a payment method" });
+      return;
+    }
+    if (!address?.fullAddress) {
+      Toast.show({ type: "error", text1: "Please select an address" });
+      return;
+    }
+    if (!city) {
+      Toast.show({ type: "error", text1: "Please enter your city" });
+      return;
+    }
+    if (!state) {
+      Toast.show({ type: "error", text1: "Please enter your state" });
+      return;
+    }
+    if (!country) {
+      Toast.show({ type: "error", text1: "Please enter your country" });
+      return;
+    }
+    if (!zipCode) {
+      Toast.show({ type: "error", text1: "Please enter your postal code" });
+      return;
+    }
     let payload = {
       deliveryType: delivery,
       descriptions,
@@ -51,7 +126,55 @@ const ScheduleServiceScreen = ({ navigation }: any) => {
       phone,
       address,
     };
-    navigation.navigate(Routes.ScheduleScreen, { payload });
+    console.log("payload", payload);
+    if (delivery === "2") {
+      let selfDeliveryPayload = {
+        requestId: requestId?.toString(),
+        phoneNumber: payload?.phone,
+        delivery_type: payload?.deliveryType,
+        address: payload?.address?.fullAddress || "",
+        description: payload?.descriptions?.join(", "),
+        country: payload?.address?.country || country,
+        state: payload?.address?.state || state,
+        city: payload?.address?.city || city,
+        zipcode: payload?.address?.postalCode || zipCode,
+        latitude: payload?.address?.latitude,
+        longitude: payload?.address?.longitude,
+        paymentMode: payload?.paymentMethod,
+      };
+      console.log("selfDeliveryPayload", selfDeliveryPayload);
+
+      CallApi_Without_Token(api_schedule_request, selfDeliveryPayload).then(
+        (res: any) => {
+          if (res?.status === "1") {
+            Toast.show({
+              type: "success",
+              text1: res?.message || "Service scheduled successfully",
+              onHide: () => {
+                if (payload?.paymentMethod === "card") {
+                  navigation.navigate(Routes.PaymentScreen, {
+                    requestId: requestId?.toString(),
+                  });
+                } else {
+                  navigation.navigate(Routes.PaymentResultScreen, {
+                    status: "success",
+                  });
+                }
+              },
+            });
+          } else {
+            Toast.show({
+              type: "error",
+              text1: "Failed to schedule",
+              text2: res?.error || "Something went wrong",
+            });
+            console.log("res?.error ", res?.error);
+          }
+        }
+      );
+    } else {
+      navigation.navigate(Routes.ScheduleScreen, { payload });
+    }
   };
 
   return (
@@ -76,35 +199,30 @@ const ScheduleServiceScreen = ({ navigation }: any) => {
               <Text style={styles.title}>Schedule Service Request</Text>
 
               {/* Delivery Options */}
-              <Text style={styles.label}>Delivery *</Text>
+              <Text style={styles.label}>
+                Delivery <Text style={{ color: "#FF0000" }}>*</Text>
+              </Text>
               <View style={styles.radioGroup}>
-                <TouchableOpacity
-                  style={styles.radioOption}
-                  onPress={() => setDelivery("pickup_dropoff")}
-                >
-                  <View
-                    style={[
-                      styles.radioCircle,
-                      delivery === "pickup_dropoff" && styles.selected,
-                    ]}
-                  />
-                  <Text style={styles.radioText}>Pick-up + Drop-off</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.radioOption}
-                  onPress={() => setDelivery("self_delivery")}
-                >
-                  <View
-                    style={[
-                      styles.radioCircle,
-                      delivery === "self_delivery" && styles.selected,
-                    ]}
-                  />
-                  <Text style={styles.radioText}>Self Delivery + Pick-up</Text>
-                </TouchableOpacity>
+                {deliveryOptions.map((opt) => (
+                  <TouchableOpacity
+                    key={opt.value}
+                    onPress={() => setDelivery(opt.value)}
+                    style={styles.radioOption}
+                  >
+                    <View
+                      style={[
+                        styles.radioCircle,
+                        delivery === opt.value && styles.selected,
+                      ]}
+                    />
+                    <Text style={styles.radioText}>{opt.label}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
               {/* Phone */}
-              <Text style={styles.label}>Phone Number</Text>
+              <Text style={styles.label}>
+                Phone Number <Text style={{ color: "#FF0000" }}>*</Text>
+              </Text>
               <TextInput
                 style={styles.input}
                 keyboardType="phone-pad"
@@ -114,30 +232,90 @@ const ScheduleServiceScreen = ({ navigation }: any) => {
               />
 
               {/* Payment Method */}
-              <Text style={styles.label}>Payment Method</Text>
+              <Text style={styles.label}>
+                Payment Method <Text style={{ color: "#FF0000" }}>*</Text>
+              </Text>
               <View style={styles.radioGroup}>
-                {paymentOptions.map((opt) => (
-                  <TouchableOpacity
-                    key={opt.value}
-                    onPress={() => setPaymentMethod(opt.value)}
-                    style={styles.radioOption}
-                  >
-                    <View
-                      style={[
-                        styles.radioCircle,
-                        paymentMethod === opt.value && styles.selected,
-                      ]}
-                    />
-                    <Text style={styles.radioText}>{opt.label}</Text>
-                  </TouchableOpacity>
-                ))}
+                {paymentOptions.map((opt, index) => {
+                  return (
+                    <TouchableOpacity
+                      key={opt.value}
+                      onPress={() => setPaymentMethod(opt.value)}
+                      style={styles.radioOption}
+                    >
+                      <View
+                        style={[
+                          styles.radioCircle,
+                          paymentMethod === opt.value && styles.selected,
+                        ]}
+                      />
+                      <Text style={styles.radioText}>{opt.label}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
 
               {/* Address Input */}
               <AddressInputWithSuggestions
                 selectedAddress={address}
-                setSelectedAddress={(val) => setAddress(val)}
+                setSelectedAddress={(val: AddressData) => {
+                  setAddress(val);
+                  setCity(val?.city);
+                  setState(val?.state);
+                  setCountry(val?.country);
+                  setZipCode(val?.postalCode);
+                }}
               />
+
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  City <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  value={city}
+                  onChangeText={setCity}
+                  placeholder="Enter your city"
+                />
+              </View>
+
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  State <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  value={state}
+                  onChangeText={setState}
+                  placeholder="Enter your state"
+                />
+              </View>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  Country <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  value={country}
+                  onChangeText={setCountry}
+                  placeholder="Enter your country"
+                />
+              </View>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  Postal Code <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  value={zipCode}
+                  onChangeText={setZipCode}
+                  placeholder="Enter your postal code"
+                />
+              </View>
               {/* Descriptions */}
               {descriptions.map((desc, index) => (
                 <View key={index} style={styles.descriptionGroup}>

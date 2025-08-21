@@ -19,3 +19,5 @@ export const api_schedule_request: string = "schedule-service-request";
 export const service_request_list: string = "/service-request-list/";
 export const service_request_details: string = "/service-request-details/";
 export const notification_list: string = "/notification-list/";
+export const timezoneList: string = "/timezoneList";
+export const updateProfile: string = "/updateProfile";

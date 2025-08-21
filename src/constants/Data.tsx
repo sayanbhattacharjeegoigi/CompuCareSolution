@@ -199,3 +199,34 @@ export interface notificationListType {
   message: string;
   created_at: string;
 }
+// Old type
+export interface OldTimezoneItem {
+  id: number;
+  timezone: string;
+  timezonePrefix: string;
+  currentTimezone: string;
+}
+
+// New type
+export interface TimezoneOption {
+  value: number; // from id
+  label: string; // from timezonePrefix
+  timezone: string;
+  currentTimezone: string;
+}
+export interface AddressData {
+  fullAddress: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  latitude: number | null;
+  longitude: number | null;
+  placeId: string;
+}
+
+export const genderArr = [
+  { label: "Male", value: 1 },
+  { label: "Female", value: 2 },
+  { label: "Not Specified", value: 3 },
+];
