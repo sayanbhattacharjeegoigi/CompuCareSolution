@@ -1,8 +1,14 @@
 import { responsive } from "@/hooks/resposive";
+import {
+  notification_list,
+  service_request_list,
+} from "@/src/apis/ApiEndPoint";
+import { CallApi_GET } from "@/src/apis/ApiRequest";
 import LoaderIndicator from "@/src/component/common/LoaderIndicator";
 import { fetchUserDetails } from "@/src/redux/slice/authSlice";
 import { Routes } from "@/src/utils/Routes";
-import React, { useEffect } from "react";
+import { showToast } from "@/src/utils/toastUtils";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -16,9 +22,56 @@ import { useDispatch, useSelector } from "react-redux";
 const Home = ({ navigation }: any) => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state: any) => state.auth);
+  const [loadingState, setLoadingState] = useState(false);
+  const [serviceRequestCount, setServiceRequestCount] = useState<number>(0);
+  const [notificationCount, setNotificationCount] = useState<number>(0);
+
+  const getServiceList = async (userId: string) => {
+    try {
+      setLoadingState(true);
+      const res = await CallApi_GET(service_request_list + userId);
+      if (res?.status) {
+        setServiceRequestCount([...res?.list]?.length || 0);
+      } else {
+        showToast({ type: "error", text1: res?.error });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingState(false);
+    }
+  };
+  const getNotificationList = async (userId: string) => {
+    try {
+      setLoadingState(true);
+      const res = await CallApi_GET(notification_list + userId);
+      if (res?.status) {
+        interface NotificationItem {
+          id: string;
+          [key: string]: any;
+        }
+
+        const uniqueList: NotificationItem[] = res?.list?.filter(
+          (item: NotificationItem, index: number, self: NotificationItem[]) =>
+            index === self.findIndex((t: NotificationItem) => t.id === item.id)
+        );
+
+        setNotificationCount(uniqueList?.length || 0);
+      } else {
+        showToast({ type: "error", text1: res?.error });
+      }
+    } catch (error) {
+      console.log("Notification Fetch Error:", error);
+      showToast({ type: "error", text1: "Failed to fetch notifications" });
+    } finally {
+      setLoadingState(false);
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       const user = await dispatch(fetchUserDetails() as any);
+
       if (
         !user?.city ||
         !user?.state ||
@@ -36,6 +89,12 @@ const Home = ({ navigation }: any) => {
             navigation.navigate(Routes.ContactInformation);
           },
         });
+      } else {
+        if (!user?.userId) {
+          return;
+        }
+        getServiceList(user?.userId);
+        getNotificationList(user?.userId);
       }
     });
 
@@ -44,7 +103,7 @@ const Home = ({ navigation }: any) => {
 
   return (
     <View style={[styles.container, { backgroundColor: "#1E3A8A" }]}>
-      <LoaderIndicator isLoading={loading} />
+      <LoaderIndicator isLoading={loading || loadingState} />
       <View
         style={[
           styles.container,
@@ -87,11 +146,11 @@ const Home = ({ navigation }: any) => {
           <View style={styles.cardsRow}>
             <View style={styles.card}>
               <Text style={styles.cardTitle}>Service Request</Text>
-              <Text style={styles.cardNumber}>1</Text>
+              <Text style={styles.cardNumber}>{serviceRequestCount}</Text>
             </View>
             <View style={styles.card}>
               <Text style={styles.cardTitle}>Notification</Text>
-              <Text style={styles.cardNumber}>0</Text>
+              <Text style={styles.cardNumber}>{notificationCount}</Text>
             </View>
           </View>
         </ScrollView>

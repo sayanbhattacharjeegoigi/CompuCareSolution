@@ -11,7 +11,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
   Image,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -21,7 +20,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 const Registration = ({ navigation }: { navigation: any }) => {
@@ -111,158 +109,157 @@ const Registration = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#0E3C91" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#1E3A8A" }}>
       <LoaderIndicator isLoading={isLoading} />
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "padding"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0} // tweak if needed
-        >
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ flexGrow: 1 }}
-            bounces={false}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={{ width: "100%", backgroundColor: "#1E3A8A" }}>
-              <View style={styles.topContainer}>
-                <View
-                  style={{
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <View style={styles.externalView}>
-                    <LinearGradient
-                      // Background Linear Gradient
-                      colors={["#1E3A8A", "#20B2AA"]}
-                      style={styles.background}
-                    />
-                  </View>
 
-                  <Image
-                    source={require("../../../assets/images/frontViewMan.png")}
-                    style={{
-                      height: responsive.deviceHeight * 0.45,
-                      resizeMode: "contain",
-                      bottom: responsive.number(10),
-                    }}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0} // tweak if needed
+      >
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ flexGrow: 1 }}
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={{ width: "100%", backgroundColor: "#1E3A8A" }}>
+            <View style={styles.topContainer}>
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View style={styles.externalView}>
+                  <LinearGradient
+                    // Background Linear Gradient
+                    colors={["#1E3A8A", "#20B2AA"]}
+                    style={styles.background}
                   />
                 </View>
+
+                <Image
+                  source={require("../../../assets/images/frontViewMan.png")}
+                  style={{
+                    height: responsive.deviceHeight * 0.45,
+                    resizeMode: "contain",
+                    bottom: responsive.number(10),
+                  }}
+                />
               </View>
             </View>
-            <View style={{ width: "100%", backgroundColor: "#fff" }}>
-              <View style={styles.bottomContainner}>
-                <Text style={[styles.welcomeTxt, styles.textColor]}>
-                  Create an Account
-                </Text>
-                <Text style={[styles.enterTxt, styles.textColor]}>
-                  Please enter your details.
-                </Text>
-                <Inputfield
-                  label="First Name"
-                  onChangeText={(val) => setFirstName(val)}
-                  value={firstName}
-                  placeholder="Enter your first name"
-                  error={errors.firstName}
-                />
-                <Inputfield
-                  label="Last Name"
-                  onChangeText={(val) => setLastName(val)}
-                  value={lastName}
-                  placeholder="Enter your last name"
-                  error={errors.lastName}
-                />
-                <Inputfield
-                  label="Email"
-                  onChangeText={(val) => setEmail(val)}
-                  value={email}
-                  keyboardType="email-address"
-                  placeholder="Enter your email"
-                  error={errors.email}
-                />
-                <Inputfield
-                  label="Phone Number"
-                  onChangeText={(val) => setPhnNo(val)}
-                  value={phnNo}
-                  placeholder="Enter your phone number"
-                  keyboardType="number-pad"
-                  error={errors.phnNo}
-                />
-                <Inputfield
-                  label="Password"
-                  onChangeText={(val) => setPassword(val)}
-                  value={password}
-                  placeholder="Enter your password"
-                  secureTextEntry={true}
-                  error={errors.password}
-                />
-                <Inputfield
-                  label="Confirm Password"
-                  onChangeText={(val) => setConfirmPassword(val)}
-                  value={confirmPassword}
-                  placeholder="Enter your confirm password"
-                  error={errors.confirmPassword}
-                />
-                <View style={styles.rememberMeContainer}>
-                  <Pressable
-                    onPress={() => {
-                      setIsRememberMe((prev) => !prev);
-                    }}
-                    style={{
-                      flex: 1,
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
-                    <FontAwesome
-                      name={isRememberMe ? "check-square" : "square-o"}
-                      size={24}
-                      color="#fff"
-                    />
-                    <Text
-                      style={[
-                        styles.textColor,
-                        { marginLeft: responsive.number(5) },
-                      ]}
-                    >
-                      I accept the Privacy Services and Terms.
-                    </Text>
-                  </Pressable>
-                </View>
-
-                <TouchableOpacity
-                  onPress={() => {
-                    // navigation.navigate(Routes.Tab, { screen: Routes.Home });
-                    handelRagistration();
-                  }}
-                  style={styles.signinButton}
-                >
-                  <Text style={styles.siginText}>Sign up</Text>
-                </TouchableOpacity>
-
+          </View>
+          <View style={{ width: "100%", backgroundColor: "#fff" }}>
+            <View style={styles.bottomContainner}>
+              <Text style={[styles.welcomeTxt, styles.textColor]}>
+                Create an Account
+              </Text>
+              <Text style={[styles.enterTxt, styles.textColor]}>
+                Please enter your details.
+              </Text>
+              <Inputfield
+                label="First Name"
+                onChangeText={(val) => setFirstName(val)}
+                value={firstName}
+                placeholder="Enter your first name"
+                error={errors.firstName}
+              />
+              <Inputfield
+                label="Last Name"
+                onChangeText={(val) => setLastName(val)}
+                value={lastName}
+                placeholder="Enter your last name"
+                error={errors.lastName}
+              />
+              <Inputfield
+                label="Email"
+                onChangeText={(val) => setEmail(val)}
+                value={email}
+                keyboardType="email-address"
+                placeholder="Enter your email"
+                error={errors.email}
+              />
+              <Inputfield
+                label="Phone Number"
+                onChangeText={(val) => setPhnNo(val)}
+                value={phnNo}
+                placeholder="Enter your phone number"
+                keyboardType="number-pad"
+                error={errors.phnNo}
+              />
+              <Inputfield
+                label="Password"
+                onChangeText={(val) => setPassword(val)}
+                value={password}
+                placeholder="Enter your password"
+                secureTextEntry={true}
+                error={errors.password}
+              />
+              <Inputfield
+                label="Confirm Password"
+                onChangeText={(val) => setConfirmPassword(val)}
+                value={confirmPassword}
+                placeholder="Enter your confirm password"
+                error={errors.confirmPassword}
+              />
+              <View style={styles.rememberMeContainer}>
                 <Pressable
-                  hitSlop={hitSlope}
                   onPress={() => {
-                    navigation.navigate(Routes.LogIn);
+                    setIsRememberMe((prev) => !prev);
                   }}
                   style={{
-                    marginTop: responsive.number(20),
+                    flex: 1,
+                    flexDirection: "row",
                     alignItems: "center",
-                    justifyContent: "center",
                   }}
                 >
-                  <Text style={styles.registerText}>
-                    Already have an account?
-                    <Text style={styles.registerTextColor}>  Sign In</Text>
+                  <FontAwesome
+                    name={isRememberMe ? "check-square" : "square-o"}
+                    size={24}
+                    color="#fff"
+                  />
+                  <Text
+                    style={[
+                      styles.textColor,
+                      { marginLeft: responsive.number(5) },
+                    ]}
+                  >
+                    I accept the Privacy Services and Terms.
                   </Text>
                 </Pressable>
               </View>
+
+              <TouchableOpacity
+                onPress={() => {
+                  // navigation.navigate(Routes.Tab, { screen: Routes.Home });
+                  handelRagistration();
+                }}
+                style={styles.signinButton}
+              >
+                <Text style={styles.siginText}>Sign up</Text>
+              </TouchableOpacity>
+
+              <Pressable
+                hitSlop={hitSlope}
+                onPress={() => {
+                  navigation.navigate(Routes.LogIn);
+                }}
+                style={{
+                  marginTop: responsive.number(20),
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={styles.registerText}>
+                  Already have an account?
+                  <Text style={styles.registerTextColor}>  Sign In</Text>
+                </Text>
+              </Pressable>
             </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

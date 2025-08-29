@@ -1,1 +1,1 @@
-export const hitSlope = { top: 25, bottom: 25, left: 15, right: 15 };
+export const hitSlope = { top: 10, bottom: 10, left: 5, right: 5 };

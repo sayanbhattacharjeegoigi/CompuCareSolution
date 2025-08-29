@@ -16,7 +16,6 @@ import * as ImagePicker from "expo-image-picker";
 import moment from "moment-timezone";
 import React, { useEffect, useState } from "react";
 import {
-  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -26,7 +25,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -338,132 +336,161 @@ const ContactInformation = () => {
   }, [navigation]);
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "padding"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0} // tweak if needed
-      >
-        <LoaderIndicator isLoading={isLoading} />
-        <View style={styles.container}>
-          <CurvedShape
-            title="Edit Profile"
-            handeleBackButtonPrees={() => {
-              navigation.goBack();
-            }}
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#fff" }}
+      behavior={Platform.OS === "ios" ? "padding" : "padding"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0} // tweak if needed
+    >
+      <LoaderIndicator isLoading={isLoading} />
+      <View style={styles.container}>
+        <CurvedShape
+          title="Edit Profile"
+          handeleBackButtonPrees={() => {
+            navigation.goBack();
+          }}
+        >
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
+            contentContainerStyle={styles.scrollContainer}
           >
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              nestedScrollEnabled={true}
-              contentContainerStyle={styles.scrollContainer}
-            >
-              <View style={styles.avatarContainer}>
-                <Pressable
-                  style={{}}
-                  onPress={() => {
-                    // Handle avatar change logic here
-                    // For example, open image picker or camera
-                    setImageShowPicker(true);
+            <View style={styles.avatarContainer}>
+              <Pressable
+                style={{}}
+                onPress={() => {
+                  // Handle avatar change logic here
+                  // For example, open image picker or camera
+                  setImageShowPicker(true);
+                }}
+              >
+                {userDetails?.profileImg ? (
+                  <Image
+                    source={{ uri: userDetails?.profileImg }} // or use any static dummy image
+                    style={styles.avatar}
+                  />
+                ) : (
+                  <Image
+                    source={require("@/assets/images/user.png")} // or use any static dummy image
+                    style={styles.avatar}
+                  />
+                )}
+                <View
+                  style={{
+                    width: responsive.number(40),
+                    height: undefined,
+                    aspectRatio: 1,
+                    borderRadius: responsive.number(20),
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#1E3A8A",
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
                   }}
                 >
-                  {userDetails?.profileImg ? (
-                    <Image
-                      source={{ uri: userDetails?.profileImg }} // or use any static dummy image
-                      style={styles.avatar}
-                    />
-                  ) : (
-                    <Image
-                      source={require("@/assets/images/user.png")} // or use any static dummy image
-                      style={styles.avatar}
-                    />
-                  )}
-                  <View
-                    style={{
-                      width: responsive.number(40),
-                      height: undefined,
-                      aspectRatio: 1,
-                      borderRadius: responsive.number(20),
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: "#1E3A8A",
-                      position: "absolute",
-                      bottom: 0,
-                      right: 0,
-                    }}
-                  >
-                    <Entypo
-                      name="camera"
-                      size={responsive.number(24)}
-                      color="#fff"
-                    />
-                  </View>
-                </Pressable>
+                  <Entypo
+                    name="camera"
+                    size={responsive.number(24)}
+                    color="#fff"
+                  />
+                </View>
+              </Pressable>
+            </View>
+            <>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  First Name <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  textContentType="name"
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  placeholder="Enter your first name"
+                />
               </View>
-              <>
-                <View style={{ width: "100%" }}>
-                  <Text style={styles.label}>
-                    First Name <Text style={{ color: "#FF0000" }}>*</Text>
-                  </Text>
-                  <TextInput
-                    style={styles.input}
-                    keyboardType="default"
-                    textContentType="name"
-                    value={firstName}
-                    onChangeText={setFirstName}
-                    placeholder="Enter your first name"
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  Last Name <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  textContentType="name"
+                  value={lastName}
+                  onChangeText={setLastName}
+                  placeholder="Enter your last name"
+                />
+              </View>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  Email <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="email-address"
+                  textContentType="emailAddress"
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="Enter your email"
+                />
+              </View>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  Phone Number <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="number-pad"
+                  textContentType="telephoneNumber"
+                  value={phnNumber}
+                  onChangeText={setPhnNumber}
+                  placeholder="Enter your phone number"
+                />
+              </View>
+              <View style={{ width: "100%" }}>
+                <CustomDropdown
+                  label="Gender"
+                  placeholder="Select your gender"
+                  items={genderArr}
+                  selectedValue={gender}
+                  onValueChange={setGender}
+                />
+              </View>
+              {Platform.OS === "ios" ? (
+                <>
+                  <Text style={styles.label}>Date of Birth</Text>
+                  <DateTimePicker
+                    value={dob ? new Date(dob) : new Date()}
+                    mode="date"
+                    maximumDate={new Date()}
+                    display="default"
+                    onChange={onChange}
+                    onTouchCancel={() => setShowPicker(false)}
+                    onTouchEnd={() => setShowPicker(false)}
                   />
-                </View>
-                <View style={{ width: "100%" }}>
-                  <Text style={styles.label}>
-                    Last Name <Text style={{ color: "#FF0000" }}>*</Text>
-                  </Text>
-                  <TextInput
-                    style={styles.input}
-                    keyboardType="default"
-                    textContentType="name"
-                    value={lastName}
-                    onChangeText={setLastName}
-                    placeholder="Enter your last name"
-                  />
-                </View>
-                <View style={{ width: "100%" }}>
-                  <Text style={styles.label}>
-                    Email <Text style={{ color: "#FF0000" }}>*</Text>
-                  </Text>
-                  <TextInput
-                    style={styles.input}
-                    keyboardType="email-address"
-                    textContentType="emailAddress"
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder="Enter your email"
-                  />
-                </View>
-                <View style={{ width: "100%" }}>
-                  <Text style={styles.label}>
-                    Phone Number <Text style={{ color: "#FF0000" }}>*</Text>
-                  </Text>
-                  <TextInput
-                    style={styles.input}
-                    keyboardType="number-pad"
-                    textContentType="telephoneNumber"
-                    value={phnNumber}
-                    onChangeText={setPhnNumber}
-                    placeholder="Enter your phone number"
-                  />
-                </View>
-                <View style={{ width: "100%" }}>
-                  <CustomDropdown
-                    label="Gender"
-                    placeholder="Select your gender"
-                    items={genderArr}
-                    selectedValue={gender}
-                    onValueChange={setGender}
-                  />
-                </View>
-                {Platform.OS === "ios" ? (
-                  <>
+                </>
+              ) : (
+                <>
+                  <Pressable
+                    onPress={() => {
+                      setShowPicker(true);
+                    }}
+                    style={{ width: "100%" }}
+                  >
                     <Text style={styles.label}>Date of Birth</Text>
+                    <TextInput
+                      style={styles.input}
+                      keyboardType="default"
+                      textContentType="birthdate"
+                      placeholder="YYYY-MM-DD"
+                      value={dob ? moment(dob).format("YYYY-MM-DD") : ""}
+                      editable={false}
+                    />
+                  </Pressable>
+                  {showPicker && (
                     <DateTimePicker
                       value={dob ? new Date(dob) : new Date()}
                       mode="date"
@@ -473,212 +500,182 @@ const ContactInformation = () => {
                       onTouchCancel={() => setShowPicker(false)}
                       onTouchEnd={() => setShowPicker(false)}
                     />
-                  </>
-                ) : (
-                  <>
-                    <Pressable
-                      onPress={() => {
-                        setShowPicker(true);
-                      }}
-                      style={{ width: "100%" }}
-                    >
-                      <Text style={styles.label}>Date of Birth</Text>
-                      <TextInput
-                        style={styles.input}
-                        keyboardType="default"
-                        textContentType="birthdate"
-                        placeholder="YYYY-MM-DD"
-                        value={dob ? moment(dob).format("YYYY-MM-DD") : ""}
-                        editable={false}
-                      />
-                    </Pressable>
-                    {showPicker && (
-                      <DateTimePicker
-                        value={dob ? new Date(dob) : new Date()}
-                        mode="date"
-                        maximumDate={new Date()}
-                        display="default"
-                        onChange={onChange}
-                        onTouchCancel={() => setShowPicker(false)}
-                        onTouchEnd={() => setShowPicker(false)}
-                      />
-                    )}
-                  </>
-                )}
+                  )}
+                </>
+              )}
 
-                <View style={{ width: "100%" }}>
-                  <CustomDropdown
-                    label="Time Zone"
-                    placeholder="Select your time zone"
-                    items={timeZoneList}
-                    selectedValue={timeZone}
-                    onValueChange={setTimeZone}
-                    mandetory={true}
-                  />
-                </View>
-                <AddressInputWithSuggestions
-                  selectedAddress={address}
-                  setSelectedAddress={(val: AddressData) => {
-                    setAddress(val?.fullAddress);
-                    setCity(val?.city);
-                    setState(val?.state);
-                    setCountry(val?.country);
-                    setPostalCode(val?.postalCode);
-                    setLatitude(val?.latitude?.toString() || "");
-                    setLongitude(val?.longitude?.toString() || "");
-                  }}
+              <View style={{ width: "100%" }}>
+                <CustomDropdown
+                  label="Time Zone"
+                  placeholder="Select your time zone"
+                  items={timeZoneList}
+                  selectedValue={timeZone}
+                  onValueChange={setTimeZone}
+                  mandetory={true}
                 />
-
-                <View style={{ width: "100%" }}>
-                  <Text style={styles.label}>
-                    City <Text style={{ color: "#FF0000" }}>*</Text>
-                  </Text>
-                  <TextInput
-                    style={styles.input}
-                    keyboardType="default"
-                    value={city}
-                    onChangeText={setCity}
-                    placeholder="Enter your city"
-                  />
-                </View>
-                <View style={{ width: "100%" }}>
-                  <Text style={styles.label}>
-                    State <Text style={{ color: "#FF0000" }}>*</Text>
-                  </Text>
-                  <TextInput
-                    style={styles.input}
-                    keyboardType="default"
-                    value={state}
-                    onChangeText={setState}
-                    placeholder="Enter your state"
-                  />
-                </View>
-                <View style={{ width: "100%" }}>
-                  <Text style={styles.label}>
-                    Country <Text style={{ color: "#FF0000" }}>*</Text>
-                  </Text>
-                  <TextInput
-                    style={styles.input}
-                    keyboardType="default"
-                    value={country}
-                    onChangeText={setCountry}
-                    placeholder="Enter your country"
-                  />
-                </View>
-                <View style={{ width: "100%" }}>
-                  <Text style={styles.label}>
-                    Postal Code <Text style={{ color: "#FF0000" }}>*</Text>
-                  </Text>
-                  <TextInput
-                    style={styles.input}
-                    keyboardType="default"
-                    value={postalCode}
-                    onChangeText={setPostalCode}
-                    placeholder="Enter your postal code"
-                  />
-                </View>
-                <View style={{ width: "100%" }}>
-                  <Text style={styles.label}>Description</Text>
-                  <TextInput
-                    style={styles.input}
-                    keyboardType="default"
-                    value={description}
-                    onChangeText={setDescription}
-                    placeholder="Enter your description"
-                    multiline={true}
-                    numberOfLines={4}
-                    textAlignVertical="top"
-                  />
-                </View>
-              </>
-              <View style={styles.footer}>
-                <TouchableOpacity
-                  onPress={() => handelUpdate()}
-                  style={styles.button}
-                >
-                  <Text style={styles.nextText}>Update Profile</Text>
-                </TouchableOpacity>
               </View>
-            </ScrollView>
-          </CurvedShape>
-        </View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={showImagePicker}
-          onRequestClose={() => {
-            setImageShowPicker(false);
+              <AddressInputWithSuggestions
+                selectedAddress={address}
+                setSelectedAddress={(val: AddressData) => {
+                  setAddress(val?.fullAddress);
+                  setCity(val?.city);
+                  setState(val?.state);
+                  setCountry(val?.country);
+                  setPostalCode(val?.postalCode);
+                  setLatitude(val?.latitude?.toString() || "");
+                  setLongitude(val?.longitude?.toString() || "");
+                }}
+              />
+
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  City <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  value={city}
+                  onChangeText={setCity}
+                  placeholder="Enter your city"
+                />
+              </View>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  State <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  value={state}
+                  onChangeText={setState}
+                  placeholder="Enter your state"
+                />
+              </View>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  Country <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  value={country}
+                  onChangeText={setCountry}
+                  placeholder="Enter your country"
+                />
+              </View>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>
+                  Postal Code <Text style={{ color: "#FF0000" }}>*</Text>
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  value={postalCode}
+                  onChangeText={setPostalCode}
+                  placeholder="Enter your postal code"
+                />
+              </View>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.label}>Description</Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="default"
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholder="Enter your description"
+                  multiline={true}
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                />
+              </View>
+            </>
+            <View style={styles.footer}>
+              <TouchableOpacity
+                onPress={() => handelUpdate()}
+                style={styles.button}
+              >
+                <Text style={styles.nextText}>Update Profile</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </CurvedShape>
+      </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showImagePicker}
+        onRequestClose={() => {
+          setImageShowPicker(false);
+        }}
+      >
+        <Pressable
+          style={{
+            flex: 1,
+            width: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
           }}
+          onPress={() => setImageShowPicker(false)}
         >
-          <Pressable
-            style={{
-              flex: 1,
-              width: "100%",
-              backgroundColor: "rgba(0,0,0,0.5)",
-            }}
-            onPress={() => setImageShowPicker(false)}
-          >
-            <Pressable style={styles.containerbottom}>
-              <View style={styles.contentContainer}>
+          <Pressable style={styles.containerbottom}>
+            <View style={styles.contentContainer}>
+              <Text
+                style={{
+                  fontSize: responsive.fontSize(18),
+                  marginBottom: 20,
+                }}
+              >
+                Choose an option
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  pickImageAsync();
+                  // setImageShowPicker(false);
+                }}
+                style={{
+                  width: "100%",
+
+                  borderTopWidth: 1,
+
+                  borderColor: "#ccc",
+                  padding: responsive.number(10),
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <Text
                   style={{
-                    fontSize: responsive.fontSize(18),
-                    marginBottom: 20,
+                    fontSize: responsive.fontSize(16),
+                    marginBottom: 10,
                   }}
                 >
-                  Choose an option
+                  Pick from Gallery
                 </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    pickImageAsync();
-                    // setImageShowPicker(false);
-                  }}
-                  style={{
-                    width: "100%",
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  pickImageFromCamera();
+                  // setImageShowPicker(false);
+                }}
+                style={{
+                  width: "100%",
 
-                    borderTopWidth: 1,
+                  borderTopWidth: 1,
 
-                    borderColor: "#ccc",
-                    padding: responsive.number(10),
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: responsive.fontSize(16),
-                      marginBottom: 10,
-                    }}
-                  >
-                    Pick from Gallery
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    pickImageFromCamera();
-                    // setImageShowPicker(false);
-                  }}
-                  style={{
-                    width: "100%",
-
-                    borderTopWidth: 1,
-
-                    borderColor: "#ccc",
-                    padding: responsive.number(10),
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={{ fontSize: responsive.fontSize(16) }}>
-                    Take a Photo
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </Pressable>
+                  borderColor: "#ccc",
+                  padding: responsive.number(10),
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontSize: responsive.fontSize(16) }}>
+                  Take a Photo
+                </Text>
+              </TouchableOpacity>
+            </View>
           </Pressable>
-        </Modal>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+        </Pressable>
+      </Modal>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -689,6 +686,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#fff",
   },
   scrollContainer: {
     padding: responsive.number(16),

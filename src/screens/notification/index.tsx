@@ -34,9 +34,14 @@ const Notification = ({ navigation }: any) => {
     try {
       const res = await CallApi_GET(notification_list + userDetails?.userId);
       if (res?.status) {
-        const uniqueList = res?.list?.filter(
-          (item, index, self) =>
-            index === self.findIndex((t) => t.id === item.id)
+        const uniqueList: notificationListType[] = res?.list?.filter(
+          (
+            item: notificationListType,
+            index: number,
+            self: notificationListType[]
+          ) =>
+            index ===
+            self.findIndex((t: notificationListType) => t.id === item.id)
         );
         setNotificationList(uniqueList);
       } else {

@@ -12,4 +12,7 @@ export const Routes = {
   PaymentScreen: "PaymentScreen",
   PaymentResultScreen: "PaymentResultScreen",
   ContactInformation: "ContactInformation",
+  Support: "Support",
+  ForgotPassword: "ForgotPassword",
+  ResetPassword: "ResetPassword",
 };

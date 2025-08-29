@@ -1,7 +1,7 @@
 import { responsive } from "@/hooks/resposive";
 import { logout } from "@/src/redux/slice/authSlice";
 import { Routes } from "@/src/utils/Routes";
-import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Image } from "expo-image";
 import React from "react";
@@ -24,25 +24,30 @@ const Profile = () => {
       route: "ContactInfo",
       action: () => navigation.navigate(Routes.ContactInformation),
     },
-    {
-      label: "Saved Addresses",
-      icon: <Ionicons name="location-sharp" size={20} color="#fff" />,
-      route: "SavedAddresses",
-    },
-    {
-      label: "Payment Methods",
-      icon: <FontAwesome5 name="wallet" size={20} color="#fff" />,
-      route: "PaymentMethods",
-    },
+    // {
+    //   label: "Saved Addresses",
+    //   icon: <Ionicons name="location-sharp" size={20} color="#fff" />,
+    //   route: "SavedAddresses",
+    // },
+    // {
+    //   label: "Payment Methods",
+    //   icon: <FontAwesome5 name="wallet" size={20} color="#fff" />,
+    //   route: "PaymentMethods",
+    // },
     {
       label: "Notification",
       icon: <Ionicons name="notifications" size={20} color="#fff" />,
       route: "Notification",
+      action: () =>
+        navigation.navigate(Routes.Tab, {
+          screen: "Notifications",
+        }),
     },
     {
       label: "Help & Support",
       icon: <MaterialIcons name="support-agent" size={20} color="#fff" />,
       route: "HelpSupport",
+      action: () => navigation.navigate(Routes.Support),
     },
     {
       label: "Logout",

@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Home from "../screens/home";
 import Notification from "../screens/notification";
@@ -17,6 +17,24 @@ const Tab = createBottomTabNavigator();
 
 const CustomHeader = ({ navigation, route, options }: BottomTabHeaderProps) => {
   const { userDetails } = useSelector((state: any) => state.auth);
+  const [greeting, setGreeting] = useState(getGreeting());
+  // Function to get greeting text
+  function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  }
+
+  // Update greeting automatically every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGreeting(getGreeting());
+    }, 60000); // check every 60 seconds
+
+    return () => clearInterval(interval); // cleanup on unmount
+  }, []);
+
   return (
     <View
       style={{
@@ -77,9 +95,15 @@ const CustomHeader = ({ navigation, route, options }: BottomTabHeaderProps) => {
               Hello {userDetails?.fname || "User"},
             </Text>
             <Text
-              style={[styles.textStyle, { fontSize: responsive.fontSize(18) }]}
+              style={[
+                styles.textStyle,
+                {
+                  fontSize: responsive.fontSize(18),
+                  textTransform: "capitalize",
+                },
+              ]}
             >
-              Good morning
+              {greeting}
             </Text>
           </View>
         </View>

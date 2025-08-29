@@ -31,7 +31,7 @@ const availableSelector = (state: any) => ({
 });
 
 export default function ScheduleScreen({ navigation, route }: any) {
-  const deliveryData = route?.params?.payload;
+  const deliveryData = route?.params?.params;
   const { userDetails } = useSelector((state: any) => state.auth);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showPicker, setShowPicker] = useState(false);
@@ -93,21 +93,21 @@ export default function ScheduleScreen({ navigation, route }: any) {
 
     const payload = {
       requestId: requestId?.toString(),
-      phoneNumber: deliveryData?.phone,
-      delivery_type: deliveryData?.deliveryType,
-      address: deliveryData?.address?.fullAddress || "",
+      phoneNumber: deliveryData?.phoneNumber,
+      delivery_type: deliveryData?.delivery_type,
+      address: deliveryData?.address || "",
       description: deliveryData?.descriptions?.join(", "),
-      country: deliveryData?.address?.country,
-      state: deliveryData?.address?.state,
-      city: deliveryData?.address?.city,
-      zipcode: deliveryData?.address?.postalCode,
-      latitude: deliveryData?.address?.latitude,
-      longitude: deliveryData?.address?.longitude,
+      country: deliveryData?.country,
+      state: deliveryData?.state,
+      city: deliveryData?.city,
+      zipcode: deliveryData?.zipcode,
+      latitude: deliveryData?.latitude,
+      longitude: deliveryData?.longitude,
       slot: selectedSlot,
       date: moment(selectedDate).format("YYYY-MM-DD"),
-      paymentMode: deliveryData?.paymentMethod,
+      paymentMode: deliveryData?.paymentMode,
     };
-    console.log("Payload for scheduling:", payload);
+    console.log("Payload for scheduling:", deliveryData);
 
     CallApi_Without_Token(api_schedule_request, payload).then((res: any) => {
       if (res?.status === "1") {
@@ -115,7 +115,7 @@ export default function ScheduleScreen({ navigation, route }: any) {
           type: "success",
           text1: res?.message || "Service scheduled successfully",
           onHide: () => {
-            if (deliveryData?.paymentMethod === "card") {
+            if (deliveryData?.paymentMode === "card") {
               navigation.navigate(Routes.PaymentScreen, {
                 requestId: requestId?.toString(),
               });

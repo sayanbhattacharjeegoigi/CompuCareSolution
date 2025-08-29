@@ -21,3 +21,5 @@ export const service_request_details: string = "/service-request-details/";
 export const notification_list: string = "/notification-list/";
 export const timezoneList: string = "/timezoneList";
 export const updateProfile: string = "/updateProfile";
+export const help_and_support: string = "/help-and-support";
+export const api_getOtp: string = "/getOtp";

@@ -1,14 +1,12 @@
 import { responsive } from "@/hooks/resposive";
+import { api_getOtp } from "@/src/apis/ApiEndPoint";
+import { CallApi_Without_Token } from "@/src/apis/ApiRequest";
 import LoaderIndicator from "@/src/component/common/LoaderIndicator";
 import Inputfield from "@/src/component/ui/Inputfield";
 import { Colors } from "@/src/constants/Colors";
 import { hitSlope } from "@/src/constants/HitSlope";
-import { login } from "@/src/redux/slice/authSlice";
-import type { RootState } from "@/src/redux/store/Store";
 import { Routes } from "@/src/utils/Routes";
 import { showToast } from "@/src/utils/toastUtils";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import type { ThunkDispatch } from "@reduxjs/toolkit";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
@@ -24,18 +22,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import Toast from "react-native-toast-message";
 
-const Login = ({ navigation }: { navigation: any }) => {
+const ForgotPassword = ({ navigation }: any) => {
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [isRememberMe, setIsRememberMe] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<string>("");
-  const [passwordError, setPasswordError] = useState<string>("");
-  const [alert, setAlert] = useState("");
-  const dispatch = useDispatch<ThunkDispatch<RootState, any, any>>(); // <-- type the dispatch hook for thunks
-  const { loading, error } = useSelector((state: any) => state.auth);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const validateForm = () => {
     let isValid = true;
 
@@ -52,17 +44,41 @@ const Login = ({ navigation }: { navigation: any }) => {
       setEmailError("");
     }
 
-    if (!password.trim()) {
-      setPasswordError("Password is required");
-      showToast({ text1: "Password is required", type: "error" });
-      isValid = false;
-    } else {
-      setPasswordError("");
-    }
-
     return isValid;
   };
 
+  const getOtp = () => {
+    let payload = {
+      email,
+    };
+    CallApi_Without_Token(api_getOtp, payload)
+      .then((res) => {
+        if (res?.status === 1) {
+          Toast.show({
+            type: "success",
+            text1: "success",
+            text2: "Otp sent to your email",
+            visibilityTime: 3000,
+            onHide() {
+              //   console.log("userid", res?.userId);
+              navigation.navigate(Routes.ResetPassword, {
+                userId: res?.userId,
+                email: email,
+              });
+            },
+          });
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Failed",
+            text2: res?.error || "Something went wrong",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log("Get Otp Error:", error);
+      });
+  };
   return (
     <SafeAreaView style={styles.container}>
       <LoaderIndicator isLoading={loading} />
@@ -107,11 +123,13 @@ const Login = ({ navigation }: { navigation: any }) => {
           <View style={{ width: "100%", backgroundColor: "#fff" }}>
             <View style={styles.bottomContainner}>
               <Text style={[styles.welcomeTxt, styles.textColor]}>
-                Welcome Back
+                Forgot Password?
               </Text>
               <Text style={[styles.enterTxt, styles.textColor]}>
-                Welcome back. Please enter your details.
+                Forgot your password? Don’t worry, enter your registered email
+                to reset it
               </Text>
+
               <Inputfield
                 label="email"
                 onChangeText={(val) => {
@@ -122,65 +140,16 @@ const Login = ({ navigation }: { navigation: any }) => {
                 placeholder="email"
                 error={emailError}
               />
-              <Inputfield
-                label="password"
-                onChangeText={(val) => {
-                  setPassword(val);
-                  if (passwordError) setPasswordError("");
-                }}
-                value={password}
-                secureTextEntry={true}
-                placeholder="password"
-                error={passwordError}
-              />
-              <View style={styles.rememberMeContainer}>
-                <Pressable
-                  onPress={() => {
-                    setIsRememberMe((prev) => !prev);
-                  }}
-                  style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <FontAwesome
-                    name={isRememberMe ? "check-square" : "square-o"}
-                    size={24}
-                    color="#fff"
-                  />
-                  <Text
-                    style={[
-                      styles.textColor,
-                      { marginLeft: responsive.number(5) },
-                    ]}
-                  >
-                    Remember me
-                  </Text>
-                </Pressable>
-                <Pressable
-                  hitSlop={hitSlope}
-                  onPress={() => {
-                    navigation.navigate(Routes.ForgotPassword);
-                  }}
-                >
-                  <Text
-                    style={[{ flex: 1, textAlign: "right" }, styles.textColor]}
-                  >
-                    Forgot Password?
-                  </Text>
-                </Pressable>
-              </View>
 
               <TouchableOpacity
                 onPress={() => {
                   if (validateForm()) {
-                    dispatch(login(email.trim(), password));
+                    getOtp();
                   }
                 }}
                 style={styles.signinButton}
               >
-                <Text style={styles.siginText}>Sign in</Text>
+                <Text style={styles.siginText}>Get Otp</Text>
               </TouchableOpacity>
 
               <Pressable
@@ -207,7 +176,7 @@ const Login = ({ navigation }: { navigation: any }) => {
   );
 };
 
-export default Login;
+export default ForgotPassword;
 
 const styles = StyleSheet.create({
   container: {

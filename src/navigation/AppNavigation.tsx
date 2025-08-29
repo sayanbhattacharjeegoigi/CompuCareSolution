@@ -78,6 +78,10 @@ const AppNavigator = () => {
               name={Routes.ContactInformation}
               component={screens.ContactInformation}
             />
+            <RootStack.Screen
+              name={Routes.Support}
+              component={screens.Support}
+            />
           </>
         ) : (
           // 🔒 Not logged in, show login/register
@@ -86,6 +90,14 @@ const AppNavigator = () => {
             <RootStack.Screen
               name={Routes.Registration}
               component={screens.Registration}
+            />
+            <RootStack.Screen
+              name={Routes.ForgotPassword}
+              component={screens.ForgotPassword}
+            />
+            <RootStack.Screen
+              name={Routes.ResetPassword}
+              component={screens.ResetPassword}
             />
           </>
         )}

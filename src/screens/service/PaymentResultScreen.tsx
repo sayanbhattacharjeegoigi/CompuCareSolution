@@ -13,6 +13,7 @@ export default function PaymentResultScreen() {
   const { status, txnId, msg } = route?.params as {
     status: "success" | "failure";
     txnId?: string;
+    msg?: string;
   };
 
   const isSuccess = status === "success";

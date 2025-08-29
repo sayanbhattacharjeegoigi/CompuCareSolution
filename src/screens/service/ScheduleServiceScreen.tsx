@@ -7,7 +7,6 @@ import CurvedShape from "@/src/component/ui/CurvedBackground ";
 import { Routes } from "@/src/utils/Routes";
 import React, { useState } from "react";
 import {
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,7 +14,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -173,196 +171,211 @@ const ScheduleServiceScreen = ({ navigation }: any) => {
         }
       );
     } else {
-      navigation.navigate(Routes.ScheduleScreen, { payload });
+      console.log("payload", payload);
+      let params = {
+        phoneNumber: payload?.phone,
+        delivery_type: payload?.deliveryType,
+        address: payload?.address?.fullAddress || "",
+        description: payload?.descriptions?.join(", "),
+        country: payload?.address?.country || country,
+        state: payload?.address?.state || state,
+        city: payload?.address?.city || city,
+        zipcode: payload?.address?.postalCode || zipCode,
+        latitude: payload?.address?.latitude,
+        longitude: payload?.address?.longitude,
+        paymentMode: payload?.paymentMethod,
+      };
+      navigation.navigate(Routes.ScheduleScreen, { params });
     }
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "padding"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0} // tweak if needed
-      >
-        <View style={styles.container}>
-          <CurvedShape
-            title="Select Repair Category"
-            handeleBackButtonPrees={() => {
-              navigation.goBack();
-            }}
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#fff" }}
+      behavior={Platform.OS === "ios" ? "padding" : "padding"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0} // tweak if needed
+    >
+      {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}> */}
+      <View style={styles.container}>
+        <CurvedShape
+          title="Select Repair Category"
+          handeleBackButtonPrees={() => {
+            navigation.goBack();
+          }}
+        >
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.scrollContainer}
           >
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              nestedScrollEnabled={true}
-              contentContainerStyle={styles.scrollContainer}
-            >
-              <Text style={styles.title}>Schedule Service Request</Text>
+            <Text style={styles.title}>Schedule Service Request</Text>
 
-              {/* Delivery Options */}
-              <Text style={styles.label}>
-                Delivery <Text style={{ color: "#FF0000" }}>*</Text>
-              </Text>
-              <View style={styles.radioGroup}>
-                {deliveryOptions.map((opt) => (
+            {/* Delivery Options */}
+            <Text style={styles.label}>
+              Delivery <Text style={{ color: "#FF0000" }}>*</Text>
+            </Text>
+            <View style={styles.radioGroup}>
+              {deliveryOptions.map((opt) => (
+                <TouchableOpacity
+                  key={opt.value}
+                  onPress={() => setDelivery(opt.value)}
+                  style={styles.radioOption}
+                >
+                  <View
+                    style={[
+                      styles.radioCircle,
+                      delivery === opt.value && styles.selected,
+                    ]}
+                  />
+                  <Text style={styles.radioText}>{opt.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            {/* Phone */}
+            <Text style={styles.label}>
+              Phone Number <Text style={{ color: "#FF0000" }}>*</Text>
+            </Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="phone-pad"
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="Enter your phone number"
+            />
+
+            {/* Payment Method */}
+            <Text style={styles.label}>
+              Payment Method <Text style={{ color: "#FF0000" }}>*</Text>
+            </Text>
+            <View style={styles.radioGroup}>
+              {paymentOptions.map((opt, index) => {
+                return (
                   <TouchableOpacity
                     key={opt.value}
-                    onPress={() => setDelivery(opt.value)}
+                    onPress={() => setPaymentMethod(opt.value)}
                     style={styles.radioOption}
                   >
                     <View
                       style={[
                         styles.radioCircle,
-                        delivery === opt.value && styles.selected,
+                        paymentMethod === opt.value && styles.selected,
                       ]}
                     />
                     <Text style={styles.radioText}>{opt.label}</Text>
                   </TouchableOpacity>
-                ))}
-              </View>
-              {/* Phone */}
+                );
+              })}
+            </View>
+
+            {/* Address Input */}
+            <AddressInputWithSuggestions
+              selectedAddress={address}
+              setSelectedAddress={(val: AddressData) => {
+                setAddress(val);
+                setCity(val?.city);
+                setState(val?.state);
+                setCountry(val?.country);
+                setZipCode(val?.postalCode);
+              }}
+            />
+
+            <View style={{ width: "100%" }}>
               <Text style={styles.label}>
-                Phone Number <Text style={{ color: "#FF0000" }}>*</Text>
+                City <Text style={{ color: "#FF0000" }}>*</Text>
               </Text>
               <TextInput
                 style={styles.input}
-                keyboardType="phone-pad"
-                value={phone}
-                onChangeText={setPhone}
-                placeholder="Enter your phone number"
+                keyboardType="default"
+                value={city}
+                onChangeText={setCity}
+                placeholder="Enter your city"
               />
+            </View>
 
-              {/* Payment Method */}
+            <View style={{ width: "100%" }}>
               <Text style={styles.label}>
-                Payment Method <Text style={{ color: "#FF0000" }}>*</Text>
+                State <Text style={{ color: "#FF0000" }}>*</Text>
               </Text>
-              <View style={styles.radioGroup}>
-                {paymentOptions.map((opt, index) => {
-                  return (
-                    <TouchableOpacity
-                      key={opt.value}
-                      onPress={() => setPaymentMethod(opt.value)}
-                      style={styles.radioOption}
-                    >
-                      <View
-                        style={[
-                          styles.radioCircle,
-                          paymentMethod === opt.value && styles.selected,
-                        ]}
-                      />
-                      <Text style={styles.radioText}>{opt.label}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-
-              {/* Address Input */}
-              <AddressInputWithSuggestions
-                selectedAddress={address}
-                setSelectedAddress={(val: AddressData) => {
-                  setAddress(val);
-                  setCity(val?.city);
-                  setState(val?.state);
-                  setCountry(val?.country);
-                  setZipCode(val?.postalCode);
-                }}
+              <TextInput
+                style={styles.input}
+                keyboardType="default"
+                value={state}
+                onChangeText={setState}
+                placeholder="Enter your state"
               />
-
-              <View style={{ width: "100%" }}>
-                <Text style={styles.label}>
-                  City <Text style={{ color: "#FF0000" }}>*</Text>
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  keyboardType="default"
-                  value={city}
-                  onChangeText={setCity}
-                  placeholder="Enter your city"
-                />
-              </View>
-
-              <View style={{ width: "100%" }}>
-                <Text style={styles.label}>
-                  State <Text style={{ color: "#FF0000" }}>*</Text>
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  keyboardType="default"
-                  value={state}
-                  onChangeText={setState}
-                  placeholder="Enter your state"
-                />
-              </View>
-              <View style={{ width: "100%" }}>
-                <Text style={styles.label}>
-                  Country <Text style={{ color: "#FF0000" }}>*</Text>
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  keyboardType="default"
-                  value={country}
-                  onChangeText={setCountry}
-                  placeholder="Enter your country"
-                />
-              </View>
-              <View style={{ width: "100%" }}>
-                <Text style={styles.label}>
-                  Postal Code <Text style={{ color: "#FF0000" }}>*</Text>
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  keyboardType="default"
-                  value={zipCode}
-                  onChangeText={setZipCode}
-                  placeholder="Enter your postal code"
-                />
-              </View>
-              {/* Descriptions */}
-              {descriptions.map((desc, index) => (
-                <View key={index} style={styles.descriptionGroup}>
-                  <Text style={styles.label}>Description {index + 1}</Text>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <TextInput
-                      style={[styles.textArea, { flex: 1 }]}
-                      placeholder="Enter description"
-                      multiline
-                      value={desc}
-                      onChangeText={(text) => updateDescription(text, index)}
-                    />
-                    {index === 0 && (
-                      //  {/* Add More Button */}
-                      <TouchableOpacity
-                        style={styles.addMoreButton}
-                        onPress={addMoreDescription}
-                      >
-                        <Text style={styles.addMoreText}>Add More</Text>
-                      </TouchableOpacity>
-                    )}
-                    {index !== 0 && (
-                      <TouchableOpacity
-                        onPress={() => removeDescription(index)}
-                        style={styles.removeButton}
-                      >
-                        <Text style={styles.removeText}>Remove</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
+            </View>
+            <View style={{ width: "100%" }}>
+              <Text style={styles.label}>
+                Country <Text style={{ color: "#FF0000" }}>*</Text>
+              </Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="default"
+                value={country}
+                onChangeText={setCountry}
+                placeholder="Enter your country"
+              />
+            </View>
+            <View style={{ width: "100%" }}>
+              <Text style={styles.label}>
+                Postal Code <Text style={{ color: "#FF0000" }}>*</Text>
+              </Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="default"
+                value={zipCode}
+                onChangeText={setZipCode}
+                placeholder="Enter your postal code"
+              />
+            </View>
+            {/* Descriptions */}
+            {descriptions.map((desc, index) => (
+              <View key={index} style={styles.descriptionGroup}>
+                <Text style={styles.label}>Description {index + 1}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <TextInput
+                    style={[styles.textArea, { flex: 1 }]}
+                    placeholder="Enter description"
+                    multiline
+                    value={desc}
+                    onChangeText={(text) => updateDescription(text, index)}
+                  />
+                  {index === 0 && (
+                    //  {/* Add More Button */}
+                    <TouchableOpacity
+                      style={styles.addMoreButton}
+                      onPress={addMoreDescription}
+                    >
+                      <Text style={styles.addMoreText}>Add More</Text>
+                    </TouchableOpacity>
+                  )}
+                  {index !== 0 && (
+                    <TouchableOpacity
+                      onPress={() => removeDescription(index)}
+                      style={styles.removeButton}
+                    >
+                      <Text style={styles.removeText}>Remove</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
-              ))}
-
-              {/* Navigation Buttons */}
-              <View style={styles.footer}>
-                <TouchableOpacity
-                  onPress={() => handelNext()}
-                  style={styles.button}
-                >
-                  <Text style={styles.nextText}>Next</Text>
-                </TouchableOpacity>
               </View>
-            </ScrollView>
-          </CurvedShape>
-        </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+            ))}
+
+            {/* Navigation Buttons */}
+            <View style={styles.footer}>
+              <TouchableOpacity
+                onPress={() => handelNext()}
+                style={styles.button}
+              >
+                <Text style={styles.nextText}>Next</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </CurvedShape>
+      </View>
+      {/* </TouchableWithoutFeedback> */}
+    </KeyboardAvoidingView>
   );
 };
 
