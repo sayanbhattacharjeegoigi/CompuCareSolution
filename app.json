@@ -2,7 +2,7 @@
   "expo": {
     "name": "CompuCareSolutions",
     "slug": "CompuCareSolutions_Customer",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "compucaresolutionscustomer",

@@ -23,3 +23,4 @@ export const timezoneList: string = "/timezoneList";
 export const updateProfile: string = "/updateProfile";
 export const help_and_support: string = "/help-and-support";
 export const api_getOtp: string = "/getOtp";
+export const api_recoveryUpdatePassword: string = "/recoveryUpdatePassword";

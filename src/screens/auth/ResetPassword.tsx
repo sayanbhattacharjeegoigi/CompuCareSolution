@@ -1,5 +1,8 @@
 import { responsive } from "@/hooks/resposive";
+import { api_recoveryUpdatePassword } from "@/src/apis/ApiEndPoint";
+import { CallApi_Without_Token } from "@/src/apis/ApiRequest";
 import LoaderIndicator from "@/src/component/common/LoaderIndicator";
+import OTPInput from "@/src/component/common/OTPInput";
 import Inputfield from "@/src/component/ui/Inputfield";
 import { Colors } from "@/src/constants/Colors";
 import { Routes } from "@/src/utils/Routes";
@@ -14,37 +17,93 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 
 const ResetPassword = ({ navigation, route }: any) => {
   console.log("routes", route?.params);
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState<string>("");
   const handleResetPassword = () => {
-    if (!otp || otp.length !== 6) {
-      alert("Please enter valid 6-digit OTP");
+    const otpValue = otp.join("");
+
+    if (!otpValue || otpValue.length !== 6) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please enter valid 6-digit OTP",
+      });
+
       return;
     }
     if (!password) {
-      alert("Please enter new password");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please enter new password",
+      });
+
       return;
     }
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Passwords do not match",
+      });
+
       return;
     }
 
     // call reset password API here
-    alert("Password reset successfully!");
-    navigation.navigate(Routes.Login);
+    setLoading(true);
+    const payload = {
+      userId: route?.params?.userId,
+      otp: otpValue,
+      newPassword: password,
+    };
+    console.log("payload", payload);
+
+    CallApi_Without_Token(api_recoveryUpdatePassword, payload)
+      .then((res) => {
+        if (res.status === 1) {
+          Toast.show({
+            type: "success",
+            text1: "Success",
+            text2: res.message || "Password reset successfully",
+            onHide: () => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: Routes.LogIn }],
+              });
+            },
+          });
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: res.error || "Something went wrong",
+          });
+        }
+      })
+      .catch((err) => {
+        console.log("err", err);
+
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Something went wrong",
+        });
+      })
+      .finally(() => setLoading(false));
+    // navigation.navigate(Routes.Login);
   };
 
   return (
@@ -98,7 +157,7 @@ const ResetPassword = ({ navigation, route }: any) => {
               </Text>
 
               <>
-                <TextInput
+                {/* <TextInput
                   placeholder="Enter 6-digit OTP"
                   placeholderTextColor="#ccc"
                   keyboardType="numeric"
@@ -106,8 +165,24 @@ const ResetPassword = ({ navigation, route }: any) => {
                   value={otp}
                   onChangeText={setOtp}
                   style={styles.input}
-                />
-
+                /> */}
+                <View style={{ width: "100%", alignItems: "flex-start" }}>
+                  <Text
+                    style={[
+                      styles.enterTxt,
+                      styles.textColor,
+                      {
+                        marginBottom: responsive.number(10),
+                        fontSize: responsive.fontSize(14),
+                        fontWeight: "400",
+                      },
+                    ]}
+                  >
+                    Enter 6-digit OTP
+                    <Text style={{ color: "#FF0000" }}>&nbsp;*</Text>
+                  </Text>
+                  <OTPInput otp={otp} setOtp={setOtp} />
+                </View>
                 <Inputfield
                   label="New Password"
                   onChangeText={(val) => {
@@ -118,17 +193,19 @@ const ResetPassword = ({ navigation, route }: any) => {
                   secureTextEntry={true}
                   placeholder="password"
                   error={passwordError}
+                  mendatory={true}
                 />
                 <Inputfield
                   label="Confirm Password"
                   onChangeText={(val) => {
-                    setPassword(val);
+                    setConfirmPassword(val);
                     if (passwordError) setPasswordError("");
                   }}
-                  value={password}
-                  secureTextEntry={true}
+                  value={confirmPassword}
+                  // secureTextEntry={true}
                   placeholder=" confirm password"
                   error={passwordError}
+                  mendatory={true}
                 />
 
                 <TouchableOpacity

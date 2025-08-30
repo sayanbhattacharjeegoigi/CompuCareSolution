@@ -76,7 +76,7 @@ export default authSlice.reducer;
 // Add these inside authSlice.ts or in a separate file if preferred
 
 export const login =
-  (email: string, password: string): AppThunk =>
+  (email: string, password: string, isRememberMe: boolean): AppThunk =>
   async (dispatch) => {
     dispatch(authStart());
     try {
@@ -96,8 +96,13 @@ export const login =
           email: res.email,
           userType: res.userType,
         };
-
         await AsyncStorage.setItem("user", JSON.stringify(user));
+        if (isRememberMe) {
+          await AsyncStorage.setItem(
+            "loginCred",
+            JSON.stringify({ email, password })
+          );
+        }
         dispatch(authSuccess(user));
       } else {
         dispatch(authFailure(res?.error || "Login failed"));

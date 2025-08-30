@@ -8,9 +8,10 @@ import type { RootState } from "@/src/redux/store/Store";
 import { Routes } from "@/src/utils/Routes";
 import { showToast } from "@/src/utils/toastUtils";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { ThunkDispatch } from "@reduxjs/toolkit";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -63,6 +64,23 @@ const Login = ({ navigation }: { navigation: any }) => {
     return isValid;
   };
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", async () => {});
+    fetchSavedCredentials();
+    return unsubscribe;
+  }, [navigation]);
+
+  const fetchSavedCredentials = async () => {
+    const data = await AsyncStorage.getItem("loginCred");
+    if (data) {
+      const cred: { email: string; password: string } = JSON.parse(data);
+      setEmail(cred?.email || "");
+      setPassword(cred?.password || "");
+      setIsRememberMe(true);
+    } else {
+      return;
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <LoaderIndicator isLoading={loading} />
@@ -175,7 +193,7 @@ const Login = ({ navigation }: { navigation: any }) => {
               <TouchableOpacity
                 onPress={() => {
                   if (validateForm()) {
-                    dispatch(login(email.trim(), password));
+                    dispatch(login(email.trim(), password, isRememberMe));
                   }
                 }}
                 style={styles.signinButton}

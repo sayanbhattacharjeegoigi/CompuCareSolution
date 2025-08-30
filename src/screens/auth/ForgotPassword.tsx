@@ -64,6 +64,7 @@ const ForgotPassword = ({ navigation }: any) => {
               navigation.navigate(Routes.ResetPassword, {
                 userId: res?.userId,
                 email: email,
+                otp: res?.otp, // remove this in production
               });
             },
           });
